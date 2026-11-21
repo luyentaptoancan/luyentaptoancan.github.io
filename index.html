@@ -492,7 +492,7 @@ let save = store.get();
 const UNLOCK_ALL = /[?&]all\b/.test(location.search);
 let lastSaid = '', lastAt = 0, sayTimer = null;
 function say(text){
-  const t = text.replace(/<[^>]+>/g,'').replace(/[⬆️⬇️↔️😮🥕]/g,'').trim();
+  const t = text.replace(/<[^>]+>/g,'').replace(/[\p{Extended_Pictographic}\u2190-\u21FF\u2700-\u27BF\u2B00-\u2BFF\uFE0F\u20E3\u200D·]/gu,'').replace(/\b[A-Z]{2,}\b/g,w=>w.toLowerCase()).replace(/\s+([.,!?])/g,'$1').replace(/\s{2,}/g,' ').trim();
   const now = Date.now();
   if(t===lastSaid && now-lastAt < 2500) return;          // stop double-speaking
   lastSaid = t; lastAt = now;
