@@ -189,6 +189,7 @@
     .tutScale{transform:scale(.9);margin:6px auto -20px}
     .tutTalk img{width:44px}.tutBubble{min-height:0;font-size:19px}
     body.tutOn #buddy{display:none}
+    .stone.chk small{display:none!important}.stone.chk{width:52px!important;height:52px!important;font-size:22px!important}
     .known.three .mini{height:100px;padding:0 6px}.known.three .mini .scale{zoom:.34}
     .slot{width:64px;height:64px}.slot .item{width:42px!important;height:42px!important}
     .known .mini{height:150px;padding:0 2px}.known .mini .scale{zoom:.55;margin:0 14px}.known.two{gap:6px}.known.two .mini{height:120px;padding:0 10px}.known.two .mini .scale{zoom:.4;margin:0}.known .lab{font-size:13px}
@@ -196,8 +197,43 @@
     .qnav{flex-wrap:nowrap;justify-content:flex-start;gap:4px}
     .qnav button{width:32px;height:32px;font-size:14px;border-width:2px}
     .skip{right:auto;left:10px}
-    .stone{width:76px;height:76px;font-size:26px}.stone small{font-size:10px}
+    .stone{width:64px;height:64px;font-size:24px;border-width:5px}.stone small{font-size:9px}
   }
+  /* tests */
+  .stone.chk{width:74px;height:74px;font-size:28px;border-radius:22px;border-color:#e0a82e;background:#fff8e6}
+  .stone.chk.ready{animation:pulse 1.4s infinite;border-color:var(--orange)}
+  .stone.chk small{font-size:10px}
+  .stone.chk .stars{font-size:13px;font-weight:800;bottom:-22px;background:#fff;border-radius:10px;padding:0 6px}
+  .t-test{background:var(--orange)}
+  body.testOn .skip{display:none!important}
+  body.testOn .hint{display:none!important}
+  .card.tmiss{border-color:#c9d3df!important}
+  .tpbox{max-width:640px}
+  .tpHead{font-weight:800;margin:12px 0 6px;font-size:18px}
+  .tpRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .tpBtn{background:#fff;border:4px solid var(--purple);border-radius:18px;padding:8px 14px;font-size:20px;font-weight:800;min-width:96px;display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 0 #b9d0e6}
+  .tpBtn.did{border-color:var(--lime)} .tpBtn small{font-size:14px}
+  #nmInput{font-family:inherit;font-size:28px;font-weight:700;text-align:center;border:4px solid var(--purple);border-radius:20px;padding:8px 14px;width:min(90%,360px);margin:10px 0}
+  #nmInput.shake{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  #result{text-align:center;padding-top:3vh}
+  .resTitle{font-size:clamp(28px,4vw,42px);font-weight:800;color:var(--purple)}
+  .resScore{font-size:clamp(34px,5vw,54px)}
+  .resBloom{margin:22px auto 0;max-width:640px;font-size:15px;color:#6b7590;background:var(--light);border-radius:16px;padding:10px 14px}
+  #cert{text-align:center}
+  #certBox{max-width:900px;margin:10px auto;background:#fff;padding:14px;border-radius:12px;background:linear-gradient(135deg,#f08a3c,#3674a4)}
+  .cIn{background:#fffdf7;border:3px dashed #e0a82e;border-radius:8px;padding:26px 30px;position:relative}
+  .cBunny{width:90px;position:absolute;right:18px;bottom:14px}
+  .cHead{font-size:clamp(24px,4vw,40px);font-weight:800;letter-spacing:2px;color:var(--purple)}
+  .cSub{font-size:16px;color:#6b7590;margin-bottom:12px}
+  .cTo{font-size:18px}
+  .cName{font-size:clamp(36px,6vw,62px);font-weight:800;color:var(--orange);border-bottom:3px solid #e0a82e;display:inline-block;padding:0 30px;margin:4px 0 10px}
+  .cText{font-size:20px;margin-bottom:8px}
+  .cTest{font-size:18px;font-weight:700}
+  .cBand{font-size:28px;font-weight:800;margin:6px 0}.cBand span{font-size:18px;color:#6b7590}
+  .cRow{display:flex;justify-content:center;gap:40px;font-size:17px;margin-top:6px}
+  .cFoot{margin-top:14px;font-size:15px;color:#6b7590}
+  @media print{ body *{visibility:hidden} #certBox,#certBox *{visibility:visible} #certBox{position:fixed;left:0;top:0;width:100%;margin:0} #foot,#buddy,#next{display:none} @page{size:landscape;margin:10mm} *{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
 </head>
 <body>
@@ -267,6 +303,38 @@
   <img src="assets/rabbit_wide.png" alt="">
   <div class="mtext" id="warnText"></div>
   <div class="mbtns"><button class="big-btn mback" id="warnBack"></button><button class="big-btn mgo" id="warnGo">Play this one ▶</button></div>
+</div></div>
+<section id="result" class="screen">
+  <img class="bunnyBig" src="assets/rabbit_wide.png" alt="">
+  <div class="speech"><div id="resTitle" class="resTitle"></div><div id="resScore" class="resScore"></div><div id="resMsg"></div></div>
+  <div class="mbtns"><button class="big-btn" id="resCert">🎓 My certificate</button><button class="big-btn mgo" id="resRetry">↻ Try again</button><button class="big-btn mgo" id="resMap">🗺️ Map</button></div>
+  <div id="resBloom" class="resBloom"></div>
+</section>
+<section id="cert" class="screen">
+  <div id="certBox"><div class="cIn">
+    <img class="cBunny" src="assets/rabbit_wide.png" alt="">
+    <div class="cHead">CERTIFICATE OF ACHIEVEMENT</div>
+    <div class="cSub">Giấy khen · Bunny's Balance Adventure</div>
+    <div class="cTo">This certificate is proudly given to</div>
+    <div class="cName"></div>
+    <div class="cText">Congratulations! You passed the challenge!<br><i>Chúc mừng con đã vượt qua thử thách!</i></div>
+    <div class="cTest"></div>
+    <div class="cBand"></div>
+    <div class="cRow"><span>Score: <b class="cScore"></b></span><span>Date: <b class="cDate"></b></span></div>
+    <div class="cFoot">First Steps Kindergarten - Tư duy thông minh</div>
+  </div></div>
+  <div class="mbtns noprint"><button class="big-btn" id="certPrint">🖨️ Print / Save PDF</button><button class="big-btn mgo" id="certMap">🗺️ Map</button></div>
+</section>
+<div id="tpick" class="modal"><div class="mbox tpbox">
+  <img src="assets/rabbit_wide.png" alt=""><div class="mtext"><b>Test time!</b> Pick a test.</div>
+  <div id="tpList"></div>
+  <div class="mbtns"><button class="big-btn mgo" id="tpClose">◀ Back</button></div>
+</div></div>
+<div id="nameModal" class="modal"><div class="mbox">
+  <img src="assets/rabbit_wide.png" alt=""><div class="mtext" id="nmTitle"></div>
+  <div class="mtext">What is your name? <small>(Tên của con)</small></div>
+  <input id="nmInput" maxlength="30" placeholder="Name / Tên" autocomplete="off">
+  <div class="mbtns"><button class="big-btn mgo" id="nmBack">◀</button><button class="big-btn" id="nmGo">Start ▶</button></div>
 </div></div>
 <footer id="foot">First Steps Kindergarten - Tư duy thông minh</footer>
 <div id="buddy"><img src="assets/rabbit_peek.png" alt=""></div>
@@ -549,7 +617,8 @@ function show(id){ document.querySelectorAll('.confetti').forEach(c=>c.remove())
 function updateCarrots(){ document.querySelectorAll('.carrotCount').forEach(e=>e.textContent=save.carrots); }
 $('#goMap').onclick = ()=>{ drawMap(); show('map'); say("Tap the pink stone to start!"); };
 $('#mapSay').onclick = ()=>say('Tap a stone to play. Win carrots for Bunny!');
-$('#backMap').onclick = $('#doneMap').onclick = $('#tutBack').onclick = ()=>{ speechSynthesis.cancel(); drawMap(); show('map'); };
+$('#backMap').onclick = ()=>{ document.body.classList.remove('testOn'); speechSynthesis.cancel(); drawMap(); show('map'); };
+$('#doneMap').onclick = $('#tutBack').onclick = ()=>{ speechSynthesis.cancel(); drawMap(); show('map'); };
 const isPhone = ()=>window.innerWidth < 760;
 
 function warnOrder(prev, i, go){
@@ -584,6 +653,17 @@ function drawMap(){
     };
     wrap.appendChild(b);
     if(isNext) bunnyAt = i;
+  });
+  CHECKPOINTS.forEach(cp=>{
+    const ready = LEVELS.slice(1,cp.after+1).every(l=>save.done[l.id]);
+    const did = cp.groups.reduce((t,g)=>t+groupDone(g),0), tot = cp.groups.reduce((t,g)=>t+TESTS.filter(x=>x.group===g).length,0);
+    const b=document.createElement('button'); b.className='stone chk'+(ready?' ready':'');
+    const PH={cp2:[12,48],cp4:[88,88],cp6:[88,12],cp7:[18,14]}; const pos=isPhone()?PH[cp.key]:cp.pos;
+    b.style.left=pos[0]+'%'; b.style.top=pos[1]+'%';
+    b.innerHTML=`${cp.icon}<small>${cp.name}</small><span class="stars">${did}/${tot}</span>`;
+    b.onclick=()=>{ const miss=LEVELS.slice(1,cp.after+1).filter(l=>!save.done[l.id]);
+      if(miss.length && !UNLOCK_ALL) warnOrder(miss[0], 0, ()=>openCheckpoint(cp)); else openCheckpoint(cp); };
+    wrap.appendChild(b);
   });
   const mb = $('#mapBunny'); mb.style.left = MAPPOS[bunnyAt][0]+'%'; mb.style.top = MAPPOS[bunnyAt][1]+'%';
   updateCarrots();
@@ -729,7 +809,7 @@ function pageDone(i){ return cur.pages[i].qs.every(q=>cur.doneQ.has(q.no)||cur.s
 function renderPage(){
   const pg = cur.pages[cur.page];
   $('#lvlTitle').textContent = `${cur.lv.icon} ${cur.lv.name}`;
-  const tag=$('#tierTag'); tag.className='tierTag t-'+pg.tier; tag.textContent={easy:'Easy',medium:'Medium',hard:'Tricky!'}[pg.tier];
+  const tag=$('#tierTag'); tag.className='tierTag t-'+pg.tier; tag.textContent={easy:'Easy',medium:'Medium',hard:'Tricky!',test:'Test 📝'}[pg.tier];
   $('#dots').innerHTML = '';
   drawQnav();
   const box=$('#cards'); box.innerHTML=''; box.style.setProperty('--cols', Math.min(pg.qs.length, isPhone()?1:3));
@@ -747,6 +827,7 @@ $('#next').onclick = ()=>{
 };
 function finishLevel(){
   track('finish-map-'+cur.lv.id);
+  if(cur.test) return finishTest();
   const stars = cur.firstTry>=cur.nQ*0.8?3:cur.firstTry>=cur.nQ*0.5?2:1;
   save.done[cur.lv.id]=Math.max(stars,save.done[cur.lv.id]||0); store.set(save);
   $('#doneSpeech').innerHTML = `Hooray! You finished <b>${cur.lv.name}</b>!<br>Bunny is so happy! ${'⭐'.repeat(stars)}`;
@@ -778,7 +859,7 @@ function makeCard(q0){
   card.querySelector('.prompt .say').onclick = ()=>{ lastSaid=''; say(card._prompt + (card._clueText||'')); };
   card.querySelector('.hint .say').onclick = ()=>{ lastSaid=''; say(card._hint); };
   let missed=false;
-  function hint(t,soft){ card._hint=t; const h=card.querySelector('.hint'); h.querySelector('.htext').innerHTML=t; h.classList.add('on'); ding(false); say(t); if(!soft) missed=true; }
+  function hint(t,soft){ if(cur.test && !soft){ missed=true; solved(); return; } card._hint=t; const h=card.querySelector('.hint'); h.querySelector('.htext').innerHTML=t; h.classList.add('on'); ding(false); say(t); if(!soft) missed=true; }
   function clearHint(){ card.querySelector('.hint').classList.remove('on'); }
   card.querySelector('.skip').onclick = ()=>{
     clearHint(); card.classList.add('skipped'); choices.querySelectorAll('button').forEach(b=>b.disabled=true);
@@ -789,10 +870,12 @@ function makeCard(q0){
   };
   function solved(){
     clearHint(); card.classList.add('solved');
-    const p = PRAISE[Math.floor(Math.random()*PRAISE.length)];
-    const pr = card.querySelector('.praise'); pr.textContent='🥕 '+p; pr.classList.add('on');
-    ding(true); say(p);
-    if(!cur.doneQ.has(q.no)){ giveCarrot(card); cur.total++; if(!missed) cur.firstTry++; }
+    const tOk = !missed;
+    const p = cur.test && !tOk ? 'Thank you! Next one.' : PRAISE[Math.floor(Math.random()*PRAISE.length)];
+    const pr = card.querySelector('.praise'); pr.textContent=(cur.test && !tOk?'👍 ':'🥕 ')+p; pr.classList.add('on');
+    if(cur.test && !tOk){ card.classList.add('tmiss'); say(p); } else { ding(true); say(p); }
+    if(cur.test) testAnswered(q, tOk, 1/(card._nopts||2));
+    if(!cur.doneQ.has(q.no)){ if(!cur.test||tOk) giveCarrot(card); cur.total++; if(!missed) cur.firstTry++; }
     cur.doneQ.add(q.no); cur.skipQ.delete(q.no); drawQnav();
     choices.querySelectorAll('button').forEach(b=>b.disabled=true);
     if(!card.isConnected) return;
@@ -800,6 +883,7 @@ function makeCard(q0){
   }
   // build answer buttons; opts = [{a, html}] ; check(a, btn)
   function ask(opts, check){
+    if(!card._nopts) card._nopts=opts.length;
     choices.innerHTML='';
     opts.forEach(o=>{ const b=document.createElement('button'); b.className='choice'; b.innerHTML=o.html;
       b.onclick=()=>check(o.a,b); choices.appendChild(b); });
@@ -898,7 +982,7 @@ function makeCard(q0){
       setPrompt(`Which side will go <b>down</b>: <b>${groupName(q.L)}</b> or <b>${groupName(q.R)}</b>?`);
       ask([{a:'L',html:`⬅️ ${groupName(q.L)}`},{a:'R',html:`${groupName(q.R)} ➡️`}],(a,b)=>{
         if(a===heavierSide(q)){ b.classList.add('right'); setTimeout(reveal,200); solved(); }
-        else { wrong(b); hint(`<b>${groupName(q.R)}</b> makes <b>${sum(q.R)}</b>. <b>7</b> is more than <b>${sum(q.R)}</b>. The bigger number is heavier.`); } });
+        else { wrong(b); hint(`<b>${groupName(q.L)}</b> makes <b>${sum(q.L)}</b>. <b>${groupName(q.R)}</b> makes <b>${sum(q.R)}</b>. The bigger number is heavier.`); } });
     }
     if(q.ask==='missing'){
       sc.classList.add('mystery');
@@ -932,7 +1016,7 @@ function makeCard(q0){
         b.classList.add('picked'); choices.querySelectorAll('button').forEach(x=>x.disabled=true);
         setTimeout(()=>{ reveal();
           if(a===real){ b.classList.add('right'); solved(); card.querySelector('.praise').innerHTML+=`<br><small>${sum(q.L)} ${real==='='?'=':'and'} ${sum(q.R)}</small>`; return; }
-          missed=true;
+          missed=true; if(cur.test){ solved(); return; }
           setTimeout(()=>{
             setPrompt(`Surprise! 😮 <b>${groupName(q.L)}</b> makes <b>${sum(q.L)}</b>. <b>${groupName(q.R)}</b> makes <b>${sum(q.R)}</b>. What did the scale do?`);
             ask(opts,(a2,b2)=>{ if(a2===real){ b2.classList.add('right'); solved(); } else { wrong(b2); hint(`Look at the scale. Is one side <b>down</b> ⬇️, or is it <b>balanced</b>?`); } });
@@ -950,7 +1034,7 @@ function makeCard(q0){
         q[side][i]=NU(to); sc.draw(); sc.real();
         if(sum(q.L)===sum(q.R)){ okWays.push(k); b.classList.add('right'); b.disabled=true;
           const other=q.fixes.findIndex((f,j)=>j!==k && !okWays.includes(j) && (()=>{ const t={L:q.L.map(x=>x.n),R:q.R.map(x=>x.n)}; t[side][i]=old; t[f[0]][f[1]]=f[2]; return t.L.reduce((a,c)=>a+c,0)===t.R.reduce((a,c)=>a+c,0); })());
-          if(okWays.length===1 && other>=0){
+          if(okWays.length===1 && other>=0 && !cur.test){
             ding(true); say('Yes! It balances. Is there another way?');
             setPrompt(`Yes, it balances! 🎉 Is there <b>another way</b> to fix ${q.who}'s scale? Try!`);
             setTimeout(()=>{ q[side][i]=NU(old); sc.draw(); sc.real(); },1500);
@@ -1118,7 +1202,7 @@ function makeCard(q0){
         else { wrong(b); hint(known ? `Follow the scales: one is heavier than the next, and that one is heavier than the last. <b>We can tell!</b>` : `Both scales only tell us about the <b>${nm(byW[2])}</b>. We don't know which of the other two is heavier.`); }
       });
     } else {
-      setPrompt(`Put them in order: <b>lightest</b> 🪶 first, <b>heaviest</b> 🏋️ last.`);
+      setPrompt(`Put them in order: <b>lightest</b> 🪶 first, <b>heaviest</b> 🏋️ last.`); card._nopts=6;
       const sl=document.createElement('div'); sl.className='slots';
       sl.innerHTML=`<div class="slot"><small>🪶 lightest</small></div><span class="arr">➜</span><div class="slot"></div><span class="arr">➜</span><div class="slot"><small>heaviest 🏋️</small></div>`;
       choices.before(sl);
@@ -1131,7 +1215,7 @@ function makeCard(q0){
           if(placed.length===3){
             if(placed.every((x,k)=>x===byW[k])){ card._done=true; solved(); }
             else { const t = q.know.length<3 ? `Find the one that goes <b>up</b> ⬆️ and is never down. That is the <b>lightest</b>. Start with it! Try again!` : `The <b>lightest</b> goes <b>up</b> on every scale. Start with it. Try again!`;
-              hint(t); setTimeout(()=>{ placed=[]; draw(); },1200); }
+              hint(t); setTimeout(()=>{ if(cur.test || card.classList.contains('solved')) return; placed=[]; draw(); },1200); }
           }
         });
       };
@@ -1193,6 +1277,7 @@ function makeCard(q0){
           let right;
           if(q.yes){ right = (hv===q.yesIf)===guess; }
           else { const side=q.watch; right = (hv===side?'down':'up')===guess; }
+          if(!right && cur.test) missed=true;
           setTimeout(()=>{
             const [A2,B2]=pair(q);
             if(hv==='='){
@@ -1253,6 +1338,215 @@ function giveCarrot(card){
     const bd=$('#buddy'); bd.classList.remove('happy'); void bd.offsetWidth; bd.classList.add('happy'); },950);
 }
 updateCarrots();
+/* ============ 8. TESTS (Bloom-tagged checks) ============ */
+// Each test: R = Remembering (40%), U = Understanding (30%), A = Applying / DOK 3 (30%)
+function rngOf(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
+  return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
+let R_ = Math.random;
+const rnd=(a,b)=>a+Math.floor(R_()*(b-a+1)), pick=a=>a[Math.floor(R_()*a.length)], coin=()=>R_()<.5;
+const shuf=a=>{ a=[...a]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(R_()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const SIZE={apple:1.8,plum:1.1,cookie:1.6,key:1.2};
+const OB=(k,w)=>I(k,SIZE[k],w);
+const SH=(k,w)=>I(k,1.3,w,'plain');
+const SPONGE=()=>I(pick(['square','circle','triangle']),2.3,1,'sponge');
+const HEAVY=(w)=>pick([()=>I('circle',1.0,w,'metal'),()=>I('square',1.0,w,'metal'),()=>OB('key',w),()=>OB('plum',w)])();
+const LR=(a,b)=>coin()?{L:a,R:b}:{L:b,R:a};
+const rep=(f,n)=>Array.from({length:n},f);
+const cap=x=>x[0].toUpperCase()+x.slice(1);
+const nmS=it=>oneName(it);
+
+const GEN = {
+ 1:{ // Big or Heavy?
+  R:[ ()=>{ const [a,b]=shuf(['apple','plum','cookie','key']); let w1=rnd(1,6), w2=rnd(1,6); if(w1===w2) w2=w1+2; return {type:'read', ...LR([OB(a,w1)],[OB(b,w2)])}; },
+      ()=>{ const [a,b]=shuf(['apple','plum','cookie','key']); let w1=rnd(1,6), w2=rnd(1,6); if(w1===w2) w2=w1+1; return {type:'updown', ...LR([OB(a,w1)],[OB(b,w2)])}; } ],
+  U:[ ()=> coin()||coin() ? {type:'bigheavy', ...LR([SPONGE()],[HEAVY(rnd(3,7))])} : {type:'bigheavy', ...LR([I('apple',2.0,rnd(6,8))],[OB('plum',rnd(1,3))])},
+      ()=>{ const n=rnd(2,3), k=rnd(1,2), bal=coin(); const big=pick(['apple','cookie']); const small=pick(['plum','key']);
+            return {type:'same', ...LR([OB(big,n*k+(bal?0:pick([1,2])))], rep(()=>({...OB(small,k),s:1.0}),n))}; } ],
+  A:[ ()=>{ const n=rnd(2,3); return coin() ? {type:'read', ...LR(rep(SPONGE,1).concat(rep(()=>I('square',2.3,1,'sponge'),n-1)), [HEAVY(n+rnd(1,3))])}
+                                           : {type:'read', ...LR(rep(()=>OB('key',2),n), [I('triangle',2.6,2*n-1,'sponge')])}; },
+      ()=>{ const n=rnd(2,3); return {type:'same', ...LR([I('square',2.4,n,'sponge')], rep(()=>I('circle',1.0,1,'metal'),n))}; } ],
+ },
+ 2:{ // Add & Take Away  (new items, not copied from practice)
+  R:[ ()=>{ const base=pick([[[AP()],[AP()]],[[PL(),PL()],[KY(),KY()]],[[CK()],[PL(),PL()]],[[CK()],[KY(),KY()]]]); const side=coin()?'L':'R'; const make=pick([CK,KY,PL]);
+            const [L,R]=coin()?base:[base[1],base[0]]; return {type:'change', L, R, act:{side,op:'add',make}, watch:side}; } ],
+  U:[ ()=>{ const t=pick([ [[AP()],[PL(),PL(),PL()],'R','plum'], [[CK(),KY()],[AP()],'L','key'], [[PL(),PL()],[KY(),KY()],coin()?'L':'R',null], [[CK(),PL()],[AP()],'L','plum'] ]);
+            let [L,R,side,k]=t; if(!k) k= side==='L'?'plum':'key'; return {type:'change', L, R, act:{side,op:'rem',k}, watch:side}; },
+      ()=>{ const H=pick([AP,CK]), lt=pick([PL,KY]), hw=H().w, m=rnd(1,hw-1); // add to the lighter side
+            const L=[H()], R=rep(lt,m); return coin() ? {type:'change', L, R, act:{side:'R',op:'add',make:lt}, watch:'R'} : {type:'change', L:R, R:L, act:{side:'L',op:'add',make:lt}, watch:'L'}; } ],
+  A:[ ()=>{ // clue + add to lighter side: still down, or balanced?
+            const H=pick([AP,CK]), lt=pick([PL,KY]), h=H(), l=lt(), hw=h.w, m=rnd(1,hw-1), after=m+1;
+            const askBal=coin(), hn=h.k;
+            return {type:'change', L:[H()], R:rep(lt,m), clue:[[[H()],rep(lt,hw)]], act:{side:'R',op:'add',make:lt},
+              yes: askBal ? 'Will the scale be <b>balanced</b> now?' : `Will the <b>${hn}</b> side still be <b>down</b>?`, yesIf: askBal?'=':'L'}; },
+      ()=>{ // clue, balanced start; add/take the same thing on both sides
+            const H=pick([AP,CK]), lt=pick([PL,KY]), hw=H().w, x=pick([KY,PL,CK].filter(f=>f!==lt && f!==H)), hn=H().k;
+            const rem=coin(); const L=rem?[H(),x()]:[H()], R=rem?[...rep(lt,hw),x()]:rep(lt,hw);
+            const askBal=coin();
+            return {type:'change', L, R, clue:[[[H()],rep(lt,hw)]], act: rem?{side:'both',op:'rem',k:x().k}:{side:'both',op:'add',make:x},
+              yes: askBal ? 'Will the scale stay <b>balanced</b>?' : `Will the <b>${hn}</b> side go <b>down</b>?`, yesIf: askBal?'=':'L'}; },
+      ()=>{ // clue; take one away from ONE side only
+            const H=pick([AP,CK]), lt=pick([PL,KY]), hw=H().w, hn=H().k, ln=lt().k;
+            return {type:'change', L:[H()], R:rep(lt,hw), clue:[[[H()],rep(lt,hw)]], act:{side:'R',op:'rem',k:ln},
+              ...(coin() ? {yes:`Will the <b>${hn}</b> side go <b>down</b>?`, yesIf:'L'} : {yes:'Will the scale stay <b>balanced</b>?', yesIf:'='})}; } ],
+ },
+ 3:{ // Balance Puzzles
+  R:[ ()=>{ const [x,y]=shuf(['square','circle','triangle']); return {type:'puzzle', know:[[[SH(x,2)],[SH(y,2)]]], L:[SH(y,2)], R:[SH(x,2)], ask:'flat', tip:`Swapping sides does not change the weight. They are <b>still the same</b>.`}; },
+      ()=>{ const [x,y]=shuf(['square','circle','triangle']); return {type:'puzzle', know:[[[SH(x,3)],[SH(y,1)]]], L:[SH(y,1)], R:[SH(x,3)], ask:'which', tip:`The ${x} is heavier. It goes down on <b>any</b> side!`}; } ],
+  U:[ ()=>{ const s=pick(['square','circle','triangle']); const add=pick([CK,KY]); return {type:'puzzle', know:[[[AP()],[SH(s,3)]]], L:[AP(),add()], R:[SH(s,3),add()], ask:'flat', tip:`We added the same thing to <b>both</b> sides. It stays balanced!`}; },
+      ()=>{ const s=pick(['square','circle','triangle']); const add=pick([CK,KY]); const one=coin(); return {type:'puzzle', know:[[[AP()],[SH(s,3)]]], L:one?[AP(),add()]:[AP()], R:one?[SH(s,3)]:[SH(s,3),add()], ask:'which', tip:`The apple and the ${s} are the same. The side with the <b>extra</b> thing is heavier.`}; },
+      ()=>({type:'puzzle', know:[[[AP()],[PL(),PL(),PL()]]], L:[AP()], R:[PL(),PL(),PL()], ask:'size', tip:`A scale tells us about <b>heavy</b>, not about <b>big</b>!`}) ],
+  A:[ ()=>{ const [x,y]=shuf(['square','circle','triangle']); return {type:'puzzle', know:[[[SH(x,2)],[SH(y,1),SH(y,1)]]], L:[SH(x,2),SH(y,1)], R:[SH(y,1),SH(y,1),SH(y,1)], ask:'flat', tip:`Swap the ${x} for <b>two ${y}s</b>. Then both sides have three ${y}s!`}; },
+      ()=>{ const [x,y]=shuf(['square','circle','triangle']); return {type:'puzzle', know:[[[SH(x,2)],[SH(y,1),SH(y,1)]]], L:[SH(x,2),SH(x,2)], R:[SH(y,1),SH(y,1),SH(y,1)], ask:'which', tip:`Two ${x}s are the same as <b>four</b> ${y}s. Four is more than three.`}; },
+      ()=>{ const [x,y,z]=shuf(['square','circle','triangle']); return {type:'puzzle', know:[[[SH(x,2)],[SH(y,2)]],[[SH(y,2)],[SH(z,2)]]], L:[SH(x,2)], R:[SH(z,2)], ask:'flat', tip:`${cap(x)} = ${y}, and ${y} = ${z}. So ${x} = <b>${z}</b>!`}; } ],
+ },
+ 4:{ // Light to Heavy
+  R:[ ()=>{ const it=o3(); return {type:'order3', items:it, know:[[0,1],[1,2],[0,2]], ask:pick(['heaviest','lightest'])}; } ],
+  U:[ ()=>{ const it=o3(); return {type:'order3', items:it, know:[[0,1],[1,2],[0,2]], ask:'order'}; } ],
+  A:[ ()=>{ const it=o3(), b=byWeight(it); return {type:'order3', items:it, know:shuf([[b[2],b[1]],[b[1],b[0]]]), ask:pick(['order','lightest','heaviest'])}; },
+      ()=>{ const it=o3(), b=byWeight(it); return {type:'order3', items:it, know: coin()?[[b[2],b[1]],[b[2],b[0]]]:[[b[2],b[1]],[b[1],b[0]]], ask:'need'}; } ],
+ },
+ 5:{ // Count the Cubes
+  R:[ ()=>{ const w=rnd(2,7); return {type:'measure', obj: w<=2 ? I('square',2.4,w,'sponge') : w>=6 ? (coin() ? I('apple',2.0,w) : I('circle',1.1,w,'metal')) : OB(pick(['cookie','plum','key']),w)}; } ],
+  U:[ ()=>{ const [a,b]=shuf(['apple','cookie','plum','key']); let x=rnd(2,8), y=rnd(2,8); if(x===y) y=x===8?6:x+1; return {type:'cubecmp', a:[OB(a,x),x], b:[OB(b,y),y], ask:'which'}; },
+      ()=>{ const [a,b]=shuf(['apple','cookie','plum','key']); const x=rnd(2,7), y=coin()?x:x+1; return {type:'cubecmp', a:[OB(a,x),x], b:[OB(b,y),y], ask:'same'}; },
+      ()=>({type:'units', obj:OB(pick(['apple','cookie']),pick([4,6,8])), ask:'bigger'}) ],
+  A:[ ()=>{ const [a,b]=shuf(['apple','cookie','plum','key']); const y=rnd(2,5), x=y+rnd(1,4); return {type:'cubecmp', a:[OB(a,x),x], b:[OB(b,y),y], ask:'more'}; },
+      ()=>({type:'units', obj:OB(pick(['apple','cookie']),pick([4,6,8])), ask:'both'}),
+      ()=>({type:'units', obj:I('apple',2.0,6), ask:'mixed'}) ],
+ },
+ 6:{ // Number Scale
+  R:[ ()=>{ const a=rnd(1,4), b=rnd(1,3), t=a+b, bal=coin(); const c=bal?t:t+pick([-1,1]);
+            const L=[...rep(CU,a),...rep(GC,b)], R=rep(CU,c); return {type:'nscale', ...(coin()?{L,R}:{L:R,R:L}), ask:'yes', say:`${a} plus ${b} cubes, and ${c} cubes`}; } ],
+  U:[ ()=>{ const a=rnd(1,5), b=rnd(1,4), t=a+b, bal=coin(); const c=bal?t:t+pick([-1,1]); const f=rnd(0,2);
+            if(f===2){ const d=rnd(1,c-1); return {type:'nscale', L:[NU(a),NU(b)], R:[NU(d),NU(c-d)], ask:'yes'}; }
+            return f ? {type:'nscale', L:[NU(c)], R:[NU(a),NU(b)], ask:'yes'} : {type:'nscale', L:[NU(a),NU(b)], R:[NU(c)], ask:'yes'}; } ],
+  A:[ ()=>{ const a=rnd(1,5), b=rnd(1,4), t=a+b, f=rnd(0,2);
+            if(f===0) return {type:'nscale', L:[NU(t)], R:[NU(a),NU(null)], ask:'missing', ans:b};
+            if(f===1) return {type:'nscale', L:[NU(t)], R:[NU(null),NU(b)], ask:'missing', ans:a};
+            return {type:'nscale', L:[NU(null)], R:[NU(a),NU(b)], ask:'missing', ans:t}; },
+      ()=>{ const a=rnd(1,4), b=rnd(1,4), t=a+b+pick([-1,1,2]); return {type:'nscale', ...LR([NU(t)],[NU(a),NU(b)]), ask:'which'}; } ],
+ },
+ 7:{ // Balance Master
+  R:[ ()=>{ const a=rnd(1,5), b=rnd(1,4), t=Math.min(10,a+b+pick([0,0,-1,1,2])); return {type:'nscale', ...LR([NU(t)],[NU(a),NU(b)]), ask:'predict'}; } ],
+  U:[ ()=>{ let a=rnd(2,9), b=rnd(1,8); if(a===b) b=a-1; return {type:'nscale', L:[NU(a)], R:[NU(b)], ask:pick(['more','take'])}; } ],
+  A:[ ()=>{ const a=rnd(2,5), b=rnd(1,3), c=a+b+pick([1,2,-1]); const fixes=[['R',0,a+b]]; if(c-a>=1&&c-a<=9&&c-a!==b) fixes.push(['L',1,c-a]);
+            fixes.push(['R',0,a+b+pick([1,2])]); return {type:'nscale', L:[NU(a),NU(b)], R:[NU(c)], ask:'fix', who:pick(['Mai','Tom','An','Bi']), fixes:shuf(fixes)}; },
+      ()=>{ const a=rnd(2,5), b=rnd(1,4); return {type:'nscale', L:[NU(a+b)], R:[NU(null),NU(b)], ask:'missing', ans:a}; } ],
+ },
+};
+function o3(){ const pool=shuf(['apple','plum','cookie','key','square','circle']).slice(0,3); const ws=shuf([1,2,3]);
+  const it=pool.map((k,i)=> SIZE[k] ? OB(k,ws[i]) : I(k, ws[i]===1?2.3:1.1, ws[i], ws[i]===1?'sponge':'metal'));
+  return it; }
+function byWeight(it){ return it.map((x,i)=>i).sort((a,b)=>it[a].w-it[b].w); }
+
+// test catalogue
+const TESTS = [];
+[[1,2],[3,4],[5,6]].forEach(([a,b])=>{ for(let k=1;k<=5;k++) TESTS.push({id:`u${a}${b}-${k}`, group:`u${a}${b}`, maps:[a,b], n:{R:4,U:3,A:3}, title:`Check ${k}`, after:b}); });
+['A','B','C'].forEach(f=>TESTS.push({id:`mid-${f}`, group:'mid', maps:[1,2,3,4], n:{R:6,U:5,A:4}, title:`Mid-term ${f}`, after:4}));
+['A','B','C'].forEach(f=>TESTS.push({id:`fin-${f}`, group:'fin', maps:[1,2,3,4,5,6,7], n:{R:8,U:6,A:6}, title:`Final ${f}`, after:7}));
+const CHECKPOINTS = [
+  {key:'cp2', icon:'📝', name:'Checks 1–2', groups:['u12'], pos:[50,88], after:2},
+  {key:'cp4', icon:'🎖️', name:'Checks 3–4 & Mid-term', groups:['u34','mid'], pos:[82,64], after:4},
+  {key:'cp6', icon:'📝', name:'Checks 5–6', groups:['u56'], pos:[63,13], after:6},
+  {key:'cp7', icon:'🏅', name:'Final test', groups:['fin'], pos:[33,28], after:7},
+];
+const GROUP_NAME={u12:'Maps 1–2 · 5 checks · 10 questions', u34:'Maps 3–4 · 5 checks · 10 questions', u56:'Maps 5–6 · 5 checks · 10 questions', mid:'Mid-term · Maps 1–4 · 15 questions', fin:'Final · Maps 1–7 · 20 questions'};
+
+const PRAC2 = new Set(LEVELS[2].sets[2].qs.map(q=>JSON.stringify([q.L,q.R,q.act.side])));
+function buildTest(t){
+  R_ = rngOf('bunny-'+t.id);
+  const qs=[]; const seen=new Set();
+  ['R','U','A'].forEach((lvl,li)=>{
+    for(let i=0;i<t.n[lvl];i++){
+      const m = t.maps[(i + li + (t.id.charCodeAt(t.id.length-1)%t.maps.length)) % t.maps.length];
+      let q, key, tries=0;
+      do { q = JSON.parse(JSON.stringify(pick(GEN[m][lvl])(), (k,v)=>typeof v==='function'?'__fn:'+v.name:v)); key=JSON.stringify(q); tries++; } while((seen.has(key) || (m===2 && lvl==='A' && PRAC2.has(JSON.stringify([q.L,q.R,q.act.side])))) && tries<40);
+      seen.add(key); q.bloom=lvl; q.map=m; qs.push(q);
+    }
+  });
+  R_ = Math.random;
+  // restore functions (act.make)
+  qs.forEach(q=>{ if(q.act && typeof q.act.make==='string'){ const f={CK,KY,PL,AP}[q.act.make.replace('__fn:','')]; q.act.make=f; } });
+  return qs;
+}
+const LEVEL_BANDS = [
+  {min:.9, icon:'🏆', en:'Balance Champion', vi:'Xuất sắc', msg:'Amazing thinking!'},
+  {min:.7, icon:'⭐', en:'Super Thinker', vi:'Tốt', msg:'Great thinking!'},
+  {min:.5, icon:'🌟', en:'Rising Star', vi:'Đạt', msg:'Good work! Keep going!'},
+  {min:0,  icon:'🌱', en:'Little Explorer', vi:'Đang phát triển', msg:'You tried hard! Practice the maps and try again.'},
+];
+const bandOf = p => LEVEL_BANDS.find(b=>p>=b.min);
+const groupDone = g => TESTS.filter(t=>t.group===g).filter(t=>save.tests&&save.tests[t.id]).length;
+
+function openCheckpoint(cp){
+  const box=$('#tpList'); box.innerHTML='';
+  cp.groups.forEach(g=>{
+    const h=document.createElement('div'); h.className='tpHead'; h.textContent=GROUP_NAME[g]; box.appendChild(h);
+    const row=document.createElement('div'); row.className='tpRow';
+    TESTS.filter(t=>t.group===g).forEach(t=>{
+      const r=save.tests&&save.tests[t.id]; const b=document.createElement('button'); b.className='tpBtn'+(r?' did':'');
+      b.innerHTML=`${t.title.replace('Check ','📝 ').replace('Mid-term ','🎖️ ').replace('Final ','🏅 ')}${r?`<small>${bandOf(r.best).icon} ${Math.round(r.best*100)}%</small>`:''}`;
+      b.onclick=()=>{ $('#tpick').classList.remove('on'); askName(t); };
+      row.appendChild(b);
+    });
+    box.appendChild(row);
+  });
+  $('#tpick').classList.add('on'); lastSaid=''; say('Test time! Pick a test.');
+}
+$('#tpClose').onclick=()=>$('#tpick').classList.remove('on');
+function askName(t){
+  $('#nmTitle').textContent = t.title + ' · ' + GROUP_NAME[t.group].split(' · ').pop();
+  const inp=$('#nmInput'); inp.value=save.name||''; $('#nameModal').classList.add('on'); setTimeout(()=>inp.focus(),100);
+  say('What is your name?');
+  $('#nmGo').onclick=()=>{ const v=inp.value.trim(); if(!v){ inp.classList.add('shake'); setTimeout(()=>inp.classList.remove('shake'),400); return; }
+    save.name=v; store.set(save); $('#nameModal').classList.remove('on'); startTest(t); };
+  $('#nmBack').onclick=()=>$('#nameModal').classList.remove('on');
+}
+function startTest(t){
+  track('open-test-'+t.id);
+  const qs=buildTest(t);
+  const per=isPhone()?1:2, pages=[];
+  for(let i=0;i<qs.length;i+=per) pages.push({tier:'test', qs:qs.slice(i,i+per), first:i===0});
+  qs.forEach((q,i)=>q.no=i+1);
+  cur = {lv:{icon:t.group==='fin'?'🏅':t.group==='mid'?'🎖️':'📝', name:t.title, intro:{test:'Test time! Think carefully. You have one try for each question.'}}, test:t, results:{}, pages, page:0, firstTry:0, total:0, doneQ:new Set(), skipQ:new Set(), nQ:qs.length};
+  document.body.classList.add('testOn');
+  show('play'); renderPage();
+}
+function testAnswered(q, correct, chance){
+  if(cur.results[q.no]!==undefined) return;
+  cur.results[q.no]={ok:correct, bloom:q.bloom, map:q.map, chance:Math.min(.5,chance||.5)};
+}
+function finishTest(){
+  track('finish-test-'+cur.test.id);
+  const t=cur.test, res=Object.values(cur.results), n=cur.nQ;
+  const right=res.filter(r=>r.ok).length, luck=res.reduce((t,r)=>t+r.chance,0), p=Math.max(0,(right-luck)/(n-luck)), raw=right/n, band=bandOf(raw);
+  const by={R:[0,0],U:[0,0],A:[0,0]}; res.forEach(r=>{ by[r.bloom][1]++; if(r.ok) by[r.bloom][0]++; });
+  save.tests=save.tests||{}; const old=save.tests[t.id];
+  save.tests[t.id]={best:Math.max(raw,old?old.best:0), last:raw, adj:p, date:new Date().toLocaleDateString('en-GB'), name:save.name};
+  save.history=(save.history||[]); save.history.push({id:t.id, name:save.name, right, n, by, at:Date.now()}); store.set(save);
+  document.body.classList.remove('testOn');
+  $('#resTitle').innerHTML=`${band.icon} ${band.en}!`;
+  $('#resScore').innerHTML=`<b>${right}</b> / ${n}`;
+  $('#resMsg').textContent=band.msg;
+  $('#resBloom').innerHTML=`<b>For teachers / Dành cho giáo viên</b> · ${t.title} · Mức đạt: <b>${band.vi}</b><br>Đúng ${right}/${n} · Đoán may trung bình được ≈${luck.toFixed(1)} câu → điểm đã trừ phần đoán may: <b>${Math.round(p*100)}%</b> (danh hiệu của bé tính theo số câu đúng ${Math.round(raw*100)}%)<br>Remembering ${by.R[0]}/${by.R[1]} · Understanding ${by.U[0]}/${by.U[1]} · Applying (DOK 3) ${by.A[0]}/${by.A[1]}`;
+  $('#resCert').onclick=()=>showCert(t, right, n, band);
+  show('result'); say(`${band.en}! You got ${right} out of ${n}. ${band.msg}`); if(raw>=.5) confetti();
+}
+function showCert(t,right,n,band){
+  const c=$('#certBox');
+  c.querySelector('.cName').textContent=save.name;
+  const passed = band.min>=.5;
+  c.querySelector('.cText').innerHTML = passed ? 'Congratulations! You passed the challenge!<br><i>Chúc mừng con đã vượt qua thử thách!</i>' : 'Great effort! Keep practicing!<br><i>Con đã cố gắng rất nhiều! Hãy luyện tập thêm nhé!</i>';
+  c.querySelector('.cTest').textContent=`${t.title} — ${GROUP_NAME[t.group].split(' · ')[/mid|fin/.test(t.group)?1:0]}`;
+  c.querySelector('.cBand').innerHTML=`${band.icon} ${band.en} <span>(${band.vi})</span>`;
+  c.querySelector('.cScore').textContent=`${right} / ${n}`;
+  c.querySelector('.cDate').textContent=new Date().toLocaleDateString('en-GB');
+  show('cert'); say(passed ? `Congratulations, ${save.name}! You passed the challenge!` : `Great effort, ${save.name}! Keep practicing!`); if(passed) confetti();
+}
+$('#certPrint').onclick=()=>window.print();
+$('#certMap').onclick=$('#resMap').onclick=()=>{ speechSynthesis.cancel(); drawMap(); show('map'); };
+$('#resRetry').onclick=()=>startTest(cur.test);
+
 /* ============ CLASS CODE GATE ============ */
 const CODE_HASH='9dfbae98257df8db309d3313566195a2cc240e8a1c364762dbdfd6ab9f3cac3a';   // SHA-256 of the class code
 async function sha(t){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
