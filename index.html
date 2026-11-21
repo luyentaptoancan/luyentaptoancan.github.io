@@ -930,7 +930,7 @@ function makeCard(q0){
           missed=true;
           setTimeout(()=>{
             setPrompt(`Surprise! 😮 <b>${groupName(q.L)}</b> makes <b>${sum(q.L)}</b>. <b>${groupName(q.R)}</b> makes <b>${sum(q.R)}</b>. What did the scale do?`);
-            ask(opts,(a2,b2)=>{ if(a2===real){ b2.classList.add('right'); solved(); } else { wrong(b2); hint(`Look at the scale. Is one side <b>down</b> ⬇️, or is it flat?`); } });
+            ask(opts,(a2,b2)=>{ if(a2===real){ b2.classList.add('right'); solved(); } else { wrong(b2); hint(`Look at the scale. Is one side <b>down</b> ⬇️, or is it <b>balanced</b>?`); } });
           },900);
         },400);
       });
@@ -965,7 +965,7 @@ function makeCard(q0){
         const l=sum(q.L), r=sum(q.R);
         if(r===l){ card._done=true; const mine=`${l} = ${q.R.map(x=>x.n).join(' + ')}`;
           setPrompt(`You made a balanced scale! ⚖️`); save.made=(save.made||[]); if(!save.made.includes(mine)) save.made.push(mine); store.set(save);
-          solved(); card.querySelector('.praise').innerHTML+=`<br><small>${mine} — saved for a friend! 💾</small>`; }
+          solved(); card.querySelector('.praise').innerHTML+=`<br><small>${mine} — great job! Show it to a friend! 👫</small>`; }
         else if(r>l){ hint(`<b>${r}</b> is more than <b>${l}</b>. Too heavy! Let's start the right side again.`,true); setTimeout(()=>{ q.R=[]; sc.draw(); sc.real(); },1500); }
       });
       sc.real(); go();
