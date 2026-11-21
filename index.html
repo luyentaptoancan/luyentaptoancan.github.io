@@ -512,6 +512,7 @@ const store = {
   set(v){ try{ localStorage.setItem('bunnyBalance2',JSON.stringify(v)) }catch(e){} }
 };
 let save = store.get();
+function track(name){ try{ if(window.goatcounter && goatcounter.count) goatcounter.count({path:name, title:name, event:true}); }catch(e){} }
 const UNLOCK_ALL = /[?&]all\b/.test(location.search);
 let lastSaid = '', lastAt = 0, sayTimer = null;
 function say(text){
@@ -645,6 +646,7 @@ const TUT_STEPS = [
   {txt:`This is Bunny's pretend scale. Real apples and plums can be big or small, so <b>try it with a real scale in class!</b> Now <b>you</b> play! Add or take away. Tap <b>Done</b> when you finish.`, need:'free'},
 ];
 function startTut(){
+  track('open-map-0');
   tut = {step:0, q:{L:[],R:[]}};
   show('tut');
   const box = $('#tutScale'); box.innerHTML=''; tut.sc = makeScale(tut.q); box.appendChild(tut.sc);
@@ -693,6 +695,7 @@ function tutAct(id){
   else if(st.narrate) setTimeout(()=>tutTalk(describe(q.L,q.R)),700);
 }
 function finishTut(){
+  track('finish-map-0');
   save.done[0]=3; save.carrots+=3; store.set(save);
   $('#doneSpeech').innerHTML = `Great! Now you know the scale.<br><b>Heavier</b> goes down. <b>Lighter</b> goes up. <b>The same</b> is balanced!`;
   $('#doneCarrots').textContent='🥕🥕🥕'; show('done'); say('Great! Heavier goes down. Lighter goes up. The same is balanced!'); confetti();
@@ -701,6 +704,7 @@ function finishTut(){
 /* ============ 7. PLAYING A LEVEL ============ */
 let cur = null;
 function startLevel(lv){
+  track('open-map-'+lv.id);
   const per = isPhone()?1:3, pages=[];
   lv.sets.forEach(set=>{ for(let i=0;i<set.qs.length;i+=per) pages.push({tier:set.tier, qs:set.qs.slice(i,i+per), first:i===0}); });
   let n=0; pages.forEach(p=>p.qs.forEach(q=>q.no=++n));
@@ -742,6 +746,7 @@ $('#next').onclick = ()=>{
   finishLevel();
 };
 function finishLevel(){
+  track('finish-map-'+cur.lv.id);
   const stars = cur.firstTry>=cur.nQ*0.8?3:cur.firstTry>=cur.nQ*0.5?2:1;
   save.done[cur.lv.id]=Math.max(stars,save.done[cur.lv.id]||0); store.set(save);
   $('#doneSpeech').innerHTML = `Hooray! You finished <b>${cur.lv.name}</b>!<br>Bunny is so happy! ${'⭐'.repeat(stars)}`;
@@ -1269,5 +1274,6 @@ async function sha(t){ const b=await crypto.subtle.digest('SHA-256',new TextEnco
   });
 })();
 </script>
+<script data-goatcounter="https://luyentaptoancan.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
