@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>luyentaptoancan – Bunny's Balance Adventure</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap');
+  :root{--purple:#3674a4;--pink:#333a5c;--teal:#3674a4;--lime:#43b05c;--sky:#3674a4;--orange:#f08a3c;--ink:#333a5c;--ok:#2e9e50;--soft:#e8f0f8;--light:#f2f5fa}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;font-family:'Baloo 2',system-ui,sans-serif;color:var(--ink);
+    background:#fff;overflow-x:hidden;user-select:none}
+  button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+  .screen{display:none;min-height:100vh;padding:14px 14px 140px}
+  .screen.on{display:block}
+  .bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .bar h2{margin:0;font-size:clamp(20px,3vw,30px);flex:1;min-width:180px}
+  .chip{background:#fff;border-radius:30px;padding:6px 16px;font-weight:800;font-size:22px;box-shadow:0 3px 0 #0001}
+  .iconbtn{width:52px;height:52px;border-radius:50%;background:#fff;font-size:26px;box-shadow:0 4px 0 #0002}
+  .iconbtn:active,.big-btn:active,.choice:active,.weigh:active,.tbtn:active{transform:translateY(3px)}
+  /* start */
+  #start{text-align:center;padding-top:4vh}
+  #start h1{font-size:clamp(34px,6vw,64px);margin:0;line-height:1.05;background:linear-gradient(90deg,var(--pink),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .startRow{display:flex;justify-content:center;align-items:flex-end;gap:3vw;margin:3vh 0}
+  .startRow .photo{width:min(22vw,200px);border-radius:24px;background:#fff;padding:8px;box-shadow:0 6px 0 #0001;transform:rotate(-4deg)}
+  .startRow .photo.r{transform:rotate(4deg)}
+  .bunnyBig{width:min(28vw,220px);animation:bob 2.4s ease-in-out infinite}
+  .speech{display:inline-block;background:#fff;border:4px solid var(--purple);border-radius:28px;padding:12px 22px;font-size:clamp(20px,2.6vw,28px);font-weight:700;max-width:640px}
+  .big-btn{background:linear-gradient(#4a87b8,var(--purple));color:#fff;font-size:clamp(26px,3.4vw,36px);font-weight:800;padding:12px 44px;border-radius:40px;box-shadow:0 7px 0 #24547a;margin-top:22px}
+  @keyframes bob{50%{transform:translateY(-10px)}}
+  /* map */
+  .mapWrap{position:relative;max-width:1000px;margin:0 auto;height:calc(100vh - 150px);min-height:480px;border-radius:30px;overflow:hidden;
+    background:radial-gradient(circle at 15% 92%,#dbe8f4 0 16%,transparent 17%),radial-gradient(circle at 88% 22%,#dbe8f4 0 13%,transparent 14%),linear-gradient(#f2f5fa,#e8f0f8)}
+  .mapWrap svg{position:absolute;inset:0;width:100%;height:100%}
+  .stone{position:absolute;transform:translate(-50%,-50%);width:92px;height:92px;border-radius:50%;background:#fff;border:6px solid var(--purple);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:32px;box-shadow:0 7px 0 #0002}
+  .stone small{font-size:12px;line-height:1;max-width:82px;text-align:center}
+  .stone.tut{border-color:var(--pink)}
+  .stone.locked{border-color:#c9c3d6;color:#a9a2b8;background:#f4f2f8}
+  .stone.open{animation:pulse 1.4s infinite}
+  .stone .stars{position:absolute;bottom:-26px;font-size:18px;white-space:nowrap}
+  @keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.08)}}
+  .mapBunny{position:absolute;width:70px;transform:translate(-50%,-112%);transition:left .8s,top .8s;pointer-events:none}
+  /* play */
+  .tierTag{font-size:18px;font-weight:800;padding:4px 14px;border-radius:20px;color:#fff}
+  .t-easy{background:var(--lime)}.t-medium{background:var(--sky)}.t-hard{background:var(--pink)}
+  .dots{display:flex;gap:6px}
+  .dots i{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--purple)}
+  .dots i.done{background:var(--purple)}
+  .cards{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:16px;max-width:1200px;margin:0 auto}
+  .card{background:#fff;border-radius:26px;padding:14px 12px 44px;box-shadow:0 6px 0 #0001;border:4px solid #fff;position:relative;transition:border-color .3s}
+  .qnav{display:flex;gap:6px;overflow-x:auto;max-width:100%;padding:4px 2px;margin:0 auto 12px;justify-content:center;flex-wrap:wrap}
+  .qnav button{flex:none;width:40px;height:40px;border-radius:50%;background:#fff;border:3px solid #b9d0e6;font-weight:800;font-size:17px;color:var(--ink)}
+  .qnav button.done{background:var(--ok);border-color:var(--ok);color:#fff}
+  .qnav button.skip-d{background:#c9d3df;border-color:#c9d3df;color:#fff}
+  .qnav button.here{border-color:var(--pink);box-shadow:0 0 0 3px #333a5c44}
+  .qnav .gap{width:10px}
+  .clue{display:flex;align-items:center;justify-content:center;gap:6px;background:#fff8e6;border:3px dashed var(--orange);border-radius:16px;padding:4px 10px;margin:4px auto 0;font-weight:800;font-size:18px;flex-wrap:wrap}
+  .clue .item{width:30px!important;height:30px!important}
+  .clue .crow{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;margin:0 8px}
+  .clue .eq{font-size:26px;color:var(--pink)}
+  .known{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;background:var(--light);border-radius:18px;padding:2px 4px 0;margin-top:4px;position:relative}
+  .known .lab{position:absolute;top:4px;left:10px;font-weight:800;font-size:15px;color:var(--purple)}
+  .known .mini{padding:0 8px;overflow:visible;height:170px}
+  .known .mini .scale{zoom:.6;margin:0 10px}
+  .known.two{flex-wrap:nowrap;gap:10px;padding-top:22px}.known.two .mini{padding:0 14px;height:140px;overflow:visible;background:#fff;border:2px solid #c9d9ea;border-radius:14px}.known.two .mini .scale{zoom:.46;margin:0}
+  .scale.mystery .post,.scale.mystery .base{opacity:.35}
+  .scale.mystery .beam,.scale.mystery .rod{opacity:0}
+  .scale .qmark{display:none;position:absolute;left:112px;top:150px;width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;font-size:36px;font-weight:800;align-items:center;justify-content:center;z-index:4;box-shadow:0 4px 0 #c8641f}
+  .scale.mystery .qmark{display:flex}
+  .known.three{flex-wrap:wrap;gap:6px;padding-top:22px}.known.three .mini{padding:0 10px;height:118px;overflow:visible;background:#fff;border:2px solid #c9d9ea;border-radius:14px}.known.three .mini .scale{zoom:.4;margin:0}
+  .slots{display:flex;align-items:center;justify-content:center;gap:6px;margin:8px 0 24px}
+  .slot{width:76px;height:76px;border-radius:16px;border:3px dashed #b9d0e6;background:var(--light);display:flex;align-items:center;justify-content:center;position:relative}
+  .slot .item{width:50px!important;height:50px!important}
+  .slot small{position:absolute;bottom:-20px;font-size:13px;font-weight:800;color:#6b7590;white-space:nowrap}
+  .slot.fill{border-style:solid;border-color:var(--purple);background:#fff}
+  .slots .arr{font-size:22px;color:var(--purple)}
+  .pick .item{width:44px!important;height:44px!important}
+  .card.c0{background:#eaf3fc;border-color:#9cc3e8}.card.c0 .num{background:#3674a4}
+  .card.c1{background:#f2eefc;border-color:#c6b9ee}.card.c1 .num{background:#7a5cc9}
+  .card.c2{background:#fdf1e7;border-color:#f3c39b}.card.c2 .num{background:#e0782c}
+  .card.c0 .known,.card.c1 .known,.card.c2 .known{background:#ffffffb0}
+  .card.c0 .choice,.card.c1 .choice,.card.c2 .choice,.card.c0 .slot,.card.c1 .slot,.card.c2 .slot{background:#fff}
+  .card .choice.right{background:#dcf8e3;border-color:var(--ok)}
+  .card .choice.picked{background:var(--soft);border-color:var(--pink)}
+  .pan .stack .cubes{display:flex;flex-wrap:nowrap;justify-content:center;align-items:flex-end;width:140px;margin:0 auto;gap:8px}
+  .pan .stack .cubes .grp{display:flex;flex-wrap:wrap-reverse;justify-content:center;align-items:flex-end}
+  .cubecard{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+  .cubecard .row{display:flex;align-items:center;gap:4px;background:#fff;border-radius:16px;padding:6px 10px;flex-wrap:wrap;justify-content:flex-start}
+  .cubecard .row .obj .item{width:46px!important;height:46px!important}
+  .cubecard .row .eq{font-size:26px;font-weight:800;color:var(--pink);margin:0 4px}
+  .cubecard .row .n{font-size:22px;font-weight:800;color:var(--orange);margin-left:6px}
+  .ways{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px;min-height:34px}
+  .ways span{background:#fff;border:2px solid var(--ok);border-radius:12px;padding:2px 10px;font-weight:800;font-size:18px;color:var(--ok)}
+  .ways i{border:2px dashed #b9d0e6;border-radius:12px;padding:2px 10px;font-style:normal;color:#9aa9bd;font-weight:800}
+  .choice.numb .item{width:40px!important;height:40px!important}
+  .card.solved{border-color:var(--ok)}
+  .card.skipped{opacity:.55;border-color:#c9d3df}
+  .skip{position:absolute;bottom:8px;right:10px;background:var(--light);border:2px solid #c9d3df;border-radius:14px;padding:2px 10px;font-size:15px;font-weight:800;color:#6b7590}
+  .card.solved .skip,.card.skipped .skip{display:none}
+  .choice.tool{min-width:100px;flex-direction:row;font-size:17px}
+  .choice.tool .item{width:28px!important;height:28px!important}
+  .card .num{position:absolute;top:-12px;left:-8px;background:var(--purple);color:#fff;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}
+  .prompt{display:flex;align-items:center;gap:8px;font-size:21px;font-weight:700;min-height:62px;line-height:1.15}
+  .say{flex:none;width:44px;height:44px;border-radius:50%;background:var(--soft);font-size:22px}
+  .prompt b{color:var(--purple)}
+  .choices{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+  .choice{background:var(--light);border:3px solid #b9d0e6;border-radius:20px;padding:6px 12px;font-size:19px;font-weight:800;min-width:118px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .choice .pics{display:flex;align-items:flex-end;gap:2px;height:34px}
+  .choice .pics .item{width:30px!important;height:30px!important}
+  .choice.picked{background:var(--soft);border-color:var(--pink)}
+  .choice.right{background:#dcf8e3;border-color:var(--ok)}
+  .choice.wrong{animation:shake .4s}
+  .choice:disabled{opacity:.55}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .weigh{background:var(--sky);color:#fff;border-radius:20px;padding:8px 22px;font-size:22px;font-weight:800;box-shadow:0 5px 0 #24547a}
+  .hint{display:none;margin-top:10px;background:#fff1e8;border:3px dashed var(--orange);border-radius:16px;padding:8px 10px;font-size:19px;font-weight:700;align-items:center;gap:8px}
+  .hint.on{display:flex}
+  .hint .say{background:#ffdcc6}
+  .praise{display:none;margin-top:10px;text-align:center;font-size:22px;font-weight:800;color:var(--ok)}
+  .praise.on{display:block;animation:pop .4s}
+  @keyframes pop{0%{transform:scale(.5)}80%{transform:scale(1.1)}}
+  /* scale */
+  .scale{position:relative;width:280px;height:270px;margin:0 auto}
+  .scale .base{position:absolute;left:105px;top:220px;width:70px;height:40px;background:var(--sky);clip-path:polygon(30% 0,70% 0,100% 100%,0 100%)}
+  .scale .foot{position:absolute;left:85px;top:254px;width:110px;height:12px;background:var(--pink);border-radius:8px}
+  .scale .post{position:absolute;left:133px;top:140px;width:14px;height:86px;background:var(--sky);border-radius:6px}
+  .scale .beam{position:absolute;left:30px;top:136px;width:220px;height:10px;background:var(--pink);border-radius:6px;transform-origin:110px 5px;transition:transform 1.1s cubic-bezier(.3,1.6,.5,1)}
+  .scale .hub{position:absolute;left:126px;top:127px;width:28px;height:28px;border-radius:50%;background:var(--purple);border:5px solid #cfe0ef;z-index:3}
+  .scale .pan{position:absolute;width:120px;height:50px;transition:left 1.1s cubic-bezier(.3,1.6,.5,1),top 1.1s cubic-bezier(.3,1.6,.5,1);z-index:2}
+  .pan .rod{position:absolute;left:56px;top:30px;width:8px;height:24px;background:var(--pink);border-radius:3px}
+  .pan .dish{position:absolute;left:4px;top:14px;width:112px;height:18px;background:linear-gradient(#a9c8e4,var(--purple));border-radius:4px 4px 50px 50px;box-shadow:inset 0 3px 0 #fff9}
+  .pan .stack{position:absolute;left:-10px;right:-10px;bottom:36px;display:flex;justify-content:center;align-items:flex-end;gap:1px;pointer-events:none}
+  .pan.good .dish{outline:4px solid var(--ok);outline-offset:3px}
+  .item{display:block;mix-blend-mode:multiply;flex:none}
+  .item svg,.item img{display:block;width:100%;height:100%;object-fit:contain}
+  .tag{position:absolute;font-size:15px;font-weight:800;color:#fff;background:var(--orange);border-radius:10px;padding:0 8px;top:54px;left:50%;transform:translateX(-50%);white-space:nowrap;animation:pop .3s}
+  /* tutorial */
+  .tutWrap{max-width:900px;margin:0 auto;background:#fff;border-radius:30px;padding:16px;box-shadow:0 6px 0 #0001;text-align:center}
+  .tutTalk{display:flex;align-items:center;gap:12px;text-align:left}
+  .tutTalk img{width:70px;flex:none}
+  .tutBubble{flex:1;background:var(--soft);border-radius:22px;padding:10px 16px;font-size:clamp(20px,2.8vw,28px);font-weight:700;min-height:90px;display:flex;align-items:center}
+  .tutBubble b{color:var(--pink)}
+  .tutScale{transform:scale(1.35);transform-origin:top center;margin:22px auto 90px;width:280px}
+  .tutBtns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+  .tbtn{background:var(--light);border:3px solid #b9d0e6;border-radius:20px;padding:8px 14px;font-size:20px;font-weight:800;display:flex;align-items:center;gap:6px;min-height:60px}
+  .tbtn .item{width:34px!important;height:34px!important}
+  .tbtn.go{border-color:var(--purple);background:var(--soft);animation:glow 1s infinite}
+  .tbtn:disabled{opacity:.35;animation:none}
+  @keyframes glow{50%{box-shadow:0 0 0 7px #3674a455}}
+  .side{font-size:15px;color:#6b7590;display:block}
+  /* buddy & next */
+  #buddy{position:fixed;right:10px;bottom:6px;width:110px;z-index:20;pointer-events:none}
+  #buddy img{width:100%}
+  #buddy.happy img{animation:jump .7s 2}
+  @keyframes jump{40%{transform:translateY(-30px) rotate(-6deg)}}
+  .carrotFly{position:fixed;font-size:46px;z-index:30;pointer-events:none;transition:left .9s cubic-bezier(.5,-0.4,.6,1),top .9s cubic-bezier(.5,-0.4,.6,1),transform .9s}
+  #next{display:none;position:fixed;right:140px;bottom:20px;z-index:25;width:104px;height:104px;border-radius:50%;background:var(--lime);color:#fff;font-size:60px;font-weight:800;box-shadow:0 8px 0 #3a9a2c}
+  #next.on{display:block;animation:blink 1s infinite}
+  @keyframes blink{50%{transform:scale(1.15);background:#8af07a}}
+  .modal{display:none;position:fixed;inset:0;background:#333a5c99;z-index:60;align-items:center;justify-content:center;padding:16px}
+  .modal.on{display:flex}
+  .mbox{background:#fff;border-radius:30px;padding:20px;max-width:560px;text-align:center;border:5px solid var(--orange);animation:pop .3s}
+  .mbox img{width:90px}
+  .mtext{font-size:clamp(20px,2.6vw,26px);font-weight:700;margin:6px 0}
+  .mtext b{color:var(--orange)}
+  .mbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .mbtns .big-btn{font-size:22px;padding:10px 22px;margin-top:10px}
+  .mbtns .mgo{background:#fff;color:var(--purple);border:3px solid var(--purple);box-shadow:0 5px 0 #b9d0e6}
+  #foot{position:fixed;left:0;right:0;bottom:0;height:30px;line-height:30px;text-align:center;background:var(--pink);color:#fff;font-weight:700;font-size:15px;z-index:15;letter-spacing:.3px}
+  .screen{padding-bottom:150px}
+  #buddy{bottom:34px!important}
+  #next{bottom:44px!important}
+  #gate{text-align:center;padding-top:5vh}
+  .gatebox{display:inline-block;background:#fff;border:4px solid var(--purple);border-radius:30px;padding:16px 24px}
+  .gatebox h2{margin:4px 0;font-size:30px}
+  .gdots{display:flex;gap:12px;justify-content:center;margin:8px 0 14px}
+  .gdots i{width:22px;height:22px;border-radius:50%;border:3px solid var(--purple)}
+  .gdots i.on{background:var(--purple)}
+  .gpad{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center}
+  .gpad button{height:64px;border-radius:18px;background:var(--light);border:3px solid #b9d0e6;font-size:30px;font-weight:800}
+  .gmsg{min-height:30px;font-weight:800;color:var(--orange);margin-top:8px}
+  #done{text-align:center;padding-top:6vh}
+  #done .carrots{font-size:40px;letter-spacing:4px;margin:16px 0}
+  .confetti{position:fixed;top:-20px;font-size:28px;animation:fall linear forwards;pointer-events:none;z-index:40}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+  @media (max-width:760px){
+    #buddy{width:72px}#next{right:86px;width:80px;height:80px;font-size:44px}
+    .tutScale{transform:scale(.9);margin:6px auto -20px}
+    .tutTalk img{width:44px}.tutBubble{min-height:0;font-size:19px}
+    body.tutOn #buddy{display:none}
+    .known.three .mini{height:100px;padding:0 6px}.known.three .mini .scale{zoom:.34}
+    .slot{width:64px;height:64px}.slot .item{width:42px!important;height:42px!important}
+    .known .mini{height:150px;padding:0 2px}.known .mini .scale{zoom:.55;margin:0 14px}.known.two{gap:6px}.known.two .mini{height:120px;padding:0 10px}.known.two .mini .scale{zoom:.4;margin:0}.known .lab{font-size:13px}
+    .card .scaleHere .scale{zoom:.8}
+    .qnav{flex-wrap:nowrap;justify-content:flex-start;gap:4px}
+    .qnav button{width:32px;height:32px;font-size:14px;border-width:2px}
+    .skip{right:auto;left:10px}
+    .stone{width:76px;height:76px;font-size:26px}.stone small{font-size:10px}
+  }
+</style>
+</head>
+<body>
+
+<section id="gate" class="screen on">
+  <div class="gatebox">
+    <img src="assets/rabbit_wide.png" alt="" style="width:110px">
+    <h2>Class code 🔑</h2>
+    <div class="gdots" id="gdots"><i></i><i></i><i></i><i></i></div>
+    <div class="gpad" id="gpad"></div>
+    <div class="gmsg" id="gmsg"></div>
+  </div>
+</section>
+<section id="start" class="screen">
+  <h1>Bunny's Balance Adventure</h1>
+  <div class="startRow">
+    <img class="photo" src="Images/pan_balance_scale.webp" alt="">
+    <img class="bunnyBig" src="assets/rabbit_wide.png" alt="Bunny">
+    <img class="photo r" src="Images/balance_scale.jpg" alt="">
+  </div>
+  <div class="speech">Hi! I'm Bunny. I love carrots! 🥕<br>Help me weigh things on my scale and win carrots!</div><br>
+  <button class="big-btn" id="goMap">Let's play! ▶</button>
+</section>
+
+<section id="map" class="screen">
+  <div class="bar">
+    <h2>🗺️ Bunny's Map</h2>
+    <div class="chip">🥕 <span class="carrotCount">0</span></div>
+    <button class="iconbtn" id="mapSay">🔊</button>
+  </div>
+  <div class="mapWrap" id="mapWrap"><svg id="mapPath"></svg><img class="mapBunny" id="mapBunny" src="assets/rabbit_wide.png" alt=""></div>
+</section>
+
+<section id="tut" class="screen">
+  <div class="bar">
+    <button class="iconbtn" id="tutBack">🗺️</button>
+    <h2>⚖️ Meet the Scale</h2>
+    <div class="dots" id="tutDots"></div>
+  </div>
+  <div class="tutWrap">
+    <div class="tutTalk"><img src="assets/rabbit_wide.png" alt=""><div class="tutBubble"><span id="tutText"></span></div><button class="say" id="tutSay">🔊</button></div>
+    <div class="tutScale" id="tutScale"></div>
+    <div class="tutBtns" id="tutBtns"></div>
+  </div>
+</section>
+
+<section id="play" class="screen">
+  <div class="bar">
+    <button class="iconbtn" id="backMap">🗺️</button>
+    <h2 id="lvlTitle">Level</h2>
+    <span class="tierTag" id="tierTag">Easy</span>
+    <div class="dots" id="dots"></div>
+    <div class="chip">🥕 <span class="carrotCount">0</span></div>
+  </div>
+  <div class="qnav" id="qnav"></div>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section id="done" class="screen">
+  <img class="bunnyBig" src="assets/rabbit_wide.png" alt="">
+  <div class="speech" id="doneSpeech">You did it!</div>
+  <div class="carrots" id="doneCarrots"></div>
+  <button class="big-btn" id="doneMap">Back to the map 🗺️</button>
+</section>
+
+<div id="warn" class="modal"><div class="mbox">
+  <img src="assets/rabbit_wide.png" alt="">
+  <div class="mtext" id="warnText"></div>
+  <div class="mbtns"><button class="big-btn mback" id="warnBack"></button><button class="big-btn mgo" id="warnGo">Play this one ▶</button></div>
+</div></div>
+<footer id="foot">First Steps Kindergarten - Tư duy thông minh</footer>
+<div id="buddy"><img src="assets/rabbit_peek.png" alt=""></div>
+<button id="next" aria-label="Next">➜</button>
+
+<script>
+/* ============ 1. OBJECTS ============ */
+const SVG = {
+  cookie:`<svg viewBox="0 0 100 100"><circle cx="50" cy="52" r="44" fill="#d9a35b"/><circle cx="50" cy="50" r="42" fill="#efc27a"/>
+    <g fill="#5a3416"><circle cx="34" cy="36" r="6"/><circle cx="62" cy="30" r="5"/><circle cx="66" cy="58" r="7"/><circle cx="40" cy="66" r="6"/><circle cx="52" cy="48" r="4"/><circle cx="26" cy="54" r="4"/></g></svg>`,
+  key:`<svg viewBox="0 0 100 100"><g fill="#ffb21f" stroke="#e08a00" stroke-width="3"><circle cx="28" cy="50" r="19"/><rect x="44" y="44" width="48" height="12" rx="4"/><rect x="72" y="54" width="8" height="16" rx="2"/><rect x="84" y="54" width="8" height="12" rx="2"/></g><circle cx="28" cy="50" r="7" fill="#fff"/></svg>`,
+  num(n, dots){ const lab = n==null ? '?' : n;
+    const d = (dots && n!=null) ? Array.from({length:n},(_,i)=>`<circle cx="${18+(i%5)*16}" cy="${i<5?72:86}" r="5.5" fill="#f08a3c"/>`).join('') : '';
+    return `<svg viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="16" fill="${n==null?'#fff3e8':'#fff'}" stroke="${n==null?'#f08a3c':'#3674a4'}" stroke-width="6" ${n==null?'stroke-dasharray="10 7"':''}/>
+      <text x="50" y="${d?54:68}" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="${d?50:62}" fill="${n==null?'#f08a3c':'#333a5c'}">${lab}</text>${d}</svg>`; },
+  cube(big, col){ const c=big?['#7a5cc9','#9d84e0','#5b40a6']:col==='g'?['#43b05c','#7fd48f','#2e8a44']:['#f08a3c','#ffad6b','#c8641f'];
+    return `<svg viewBox="0 0 100 100"><polygon points="50,8 92,30 50,52 8,30" fill="${c[1]}"/><polygon points="8,30 50,52 50,96 8,74" fill="${c[0]}"/><polygon points="92,30 50,52 50,96 92,74" fill="${c[2]}"/></svg>`; },
+  shape(kind, mat){
+    if(mat==='plain'){
+      const c={square:['#3674a4','#24547a'],circle:['#f0679a','#c84a7a'],triangle:['#43b05c','#2e8a44']}[kind];
+      const bd={square:`<rect x="10" y="10" width="80" height="80" rx="10" fill="${c[0]}" stroke="${c[1]}" stroke-width="5"/>`,
+        circle:`<circle cx="50" cy="50" r="42" fill="${c[0]}" stroke="${c[1]}" stroke-width="5"/>`,
+        triangle:`<polygon points="50,8 94,90 6,90" fill="${c[0]}" stroke="${c[1]}" stroke-width="5" stroke-linejoin="round"/>`}[kind];
+      return `<svg viewBox="0 0 100 100">${bd}</svg>`;
+    }
+    const sp = mat==='sponge';
+    const fill = sp ? {square:'#ffc2e0',circle:'#b8ecff',triangle:'#c8f5b0'}[kind] : 'url(#mg)';
+    const st = sp ? '#ff7fb8' : '#4c5560';
+    const extra = sp ? `<g fill="#fff"><circle cx="35" cy="42" r="5"/><circle cx="60" cy="56" r="6"/><circle cx="46" cy="70" r="4"/><circle cx="64" cy="34" r="3"/></g>` : `<path d="M28 30 L42 30 L30 46 Z" fill="#fff" opacity=".6"/>`;
+    const body = {square:`<rect x="10" y="10" width="80" height="80" rx="8" fill="${fill}" stroke="${st}" stroke-width="4"/>`,
+                  circle:`<circle cx="50" cy="50" r="42" fill="${fill}" stroke="${st}" stroke-width="4"/>`,
+                  triangle:`<polygon points="50,8 94,90 6,90" fill="${fill}" stroke="${st}" stroke-width="4" stroke-linejoin="round"/>`}[kind];
+    return `<svg viewBox="0 0 100 100"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3e8ee"/><stop offset=".5" stop-color="#8c96a3"/><stop offset="1" stop-color="#4c5560"/></linearGradient></defs>${body}${extra}</svg>`;
+  }
+};
+function itemHTML(it,f=1){
+  const px = Math.round(30*it.s*f);
+  let inner;
+  if(it.k==='apple') inner = `<img src="assets/apple.png" alt="apple">`;
+  else if(it.k==='plum') inner = `<img src="assets/plum.png" alt="plum">`;
+  else if(it.k==='cookie'||it.k==='key') inner = SVG[it.k];
+  else if(it.k==='cube'||it.k==='bigcube') inner = SVG.cube(it.k==='bigcube', it.c);
+  else if(it.k==='num') inner = SVG.num(it.n, it.dots);
+  else inner = SVG.shape(it.k, it.m||'sponge');
+  return `<span class="item" style="width:${px}px;height:${px}px">${inner}</span>`;
+}
+function oneName(it){ if(it.k==='num') return it.n==null?'?':String(it.n); if(it.k==='bigcube') return 'big cube'; return (it.m==='metal'?'metal ':it.m==='sponge'?'sponge ':'')+it.k; }
+const NU=(n,dots)=>({k:"num",s:1.6,w:n,n,dots}), GC=()=>({...I('cube',0.85,1),c:'g'});
+const CU=()=>I('cube',0.85,1), BC=()=>I('bigcube',1.25,2);
+const SQ=(w)=>I('square',1.3,w,'plain'), CI=(w)=>I('circle',1.3,w,'plain'), TR=(w)=>I('triangle',1.3,w,'plain');
+const NUM = ['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
+// "the apple", "the 3 plums", "the square and the circle"
+function groupName(arr, spoken){
+  if(!arr.length) return 'nothing';
+  if(arr.every(i=>i.k==='num')) return arr.map(i=>i.n==null?(spoken?'what number':'?'):i.n).join(spoken?' plus ':' + ');
+  const counts = {}; arr.forEach(i=>{ const n=oneName(i); counts[n]=(counts[n]||0)+1; });
+  return Object.entries(counts).map(([n,c])=> c===1 ? (spoken?'one ':'the ')+n : (spoken?NUM[c]:c)+' '+n+'s').join(' and ');
+}
+const isPlural = arr => arr.length>1;
+const mixed = q => new Set(q.L.map(oneName)).size>1 || new Set(q.R.map(oneName)).size>1;
+// prompt pair: plain names, or left/right wording when a side has different things
+function pair(q){ return mixed(q) ? ['the <b>left</b> side ⬅️','the <b>right</b> side ➡️'] : [groupName(q.L),groupName(q.R)]; }
+
+/* ============ 2. LEVELS ============ */
+const I = (k,s,w,m)=>({k,s,w,m});
+const AP=()=>I('apple',1.8,3), PL=()=>I('plum',1.1,1), CK=()=>I('cookie',1.6,2), KY=()=>I('key',1.2,1);
+const LEVELS = [
+ {id:0, icon:'⚖️', name:'Meet the Scale', tut:true},
+ {id:1, icon:'👀', name:'Big or Heavy?', sets:[
+  {tier:'easy', qs:[
+   {type:'guess', L:[I('apple',2.0,8)], R:[I('plum',1.1,3)]},
+   {type:'guess', L:[I('square',2.3,1,'sponge')], R:[I('circle',1.0,6,'metal')]},
+   {type:'guess', L:[I('key',1.2,2)], R:[I('cookie',2.0,5)]},
+   {type:'guess', L:[I('triangle',2.4,1,'sponge')], R:[I('plum',1.1,4)]},
+   {type:'guess', L:[I('apple',1.7,8)], R:[I('circle',2.4,1,'sponge')]},
+  ]},
+  {tier:'medium', qs:[
+   {type:'bigheavy', L:[I('square',2.3,1,'sponge')], R:[I('key',1.1,3)]},
+   {type:'bigheavy', L:[I('apple',2.0,8)], R:[I('plum',1.1,3)]},
+   {type:'bigheavy', L:[I('circle',1.0,7,'metal')], R:[I('cookie',2.2,3)]},
+   {type:'bigheavy', L:[I('triangle',1.0,6,'metal')], R:[I('triangle',2.4,1,'sponge')]},
+   {type:'bigheavy', L:[I('cookie',2.0,4)], R:[I('square',1.0,8,'metal')]},
+  ]},
+  {tier:'hard', qs:[
+   {type:'read', L:[I('circle',2.4,1,'sponge'),I('circle',2.4,1,'sponge')], R:[I('key',1.1,5)]},
+   {type:'updown', L:[I('plum',1.1,5)], R:[I('cookie',2.2,2)]},
+   {type:'same', L:[I('apple',1.8,6)], R:[I('plum',1.0,2),I('plum',1.0,2),I('plum',1.0,2)]},
+   {type:'updown', L:[I('square',2.4,1,'sponge')], R:[I('square',1.0,4,'metal')]},
+   {type:'read', L:[I('key',1.1,3),I('key',1.1,3)], R:[I('triangle',2.6,1,'sponge'),I('triangle',2.6,1,'sponge'),I('triangle',2.6,1,'sponge')]},
+   {type:'same', L:[I('cookie',1.8,5)], R:[I('square',2.4,2,'sponge'),I('circle',1.0,2,'metal')]},
+  ]},
+ ]},
+ {id:2, icon:'➕', name:'Add & Take Away', intro:{easy:'What will happen? Guess, then try it!', medium:'Make the scale balance!', hard:'Tricky! Guess, then try it.'}, sets:[
+  {tier:'easy', qs:[
+   {type:'change', L:[AP()], R:[AP()], act:{side:'L',op:'add',make:CK}, watch:'L'},
+   {type:'change', L:[PL(),PL()], R:[KY(),KY()], act:{side:'R',op:'add',make:PL}, watch:'R'},
+   {type:'change', L:[CK()], R:[PL(),PL()], act:{side:'L',op:'add',make:KY}, watch:'L'},
+   {type:'change', L:[AP()], R:[PL(),PL(),PL()], act:{side:'R',op:'rem',k:'plum'}, watch:'R'},
+   {type:'change', L:[CK(),KY()], R:[AP()], act:{side:'L',op:'rem',k:'key'}, watch:'L'},
+  ]},
+  {tier:'medium', qs:[
+   {type:'balance', L:[AP()], R:[PL()], tools:[['R',PL]]},
+   {type:'balance', L:[CK()], R:[KY(),KY(),KY()], tools:[['R',KY]]},
+   {type:'balance', L:[AP()], R:[CK()], tools:[['L',KY],['R',KY]]},
+   {type:'balance', L:[PL(),PL(),PL(),PL()], R:[AP()], tools:[['L',PL],['R',PL]]},
+   {type:'balance', L:[CK(),CK()], R:[AP()], tools:[['L',KY],['R',KY]]},
+  ]},
+  {tier:'hard', qs:[
+   {type:'change', L:[AP()], R:[PL()], clue:[[[AP()],[PL(),PL(),PL()]]], act:{side:'R',op:'add',make:PL}, yes:'Will the <b>plum</b> side go <b>down</b> now?', yesIf:'R'},
+   {type:'change', L:[CK(),CK()], R:[KY(),KY()], clue:[[[CK()],[KY(),KY()]]], act:{side:'R',op:'add',make:KY}, yes:'Will the <b>key</b> side go <b>down</b> now?', yesIf:'R'},
+   {type:'change', L:[AP()], R:[PL(),PL(),PL()], clue:[[[AP()],[PL(),PL(),PL()]]], act:{side:'both',op:'add',make:CK}, yes:'Will the scale stay <b>balanced</b>?', yesIf:'='},
+   {type:'change', L:[AP()], R:[PL()], clue:[[[AP()],[PL(),PL(),PL()]],[[KY()],[PL()]]], act:{side:'both',op:'add',make:KY}, yes:'Will the <b>apple</b> side still be <b>down</b>?', yesIf:'L'},
+   {type:'change', L:[AP(),KY()], R:[CK(),KY(),KY()], clue:[[[CK()],[KY(),KY()]]], act:{side:'both',op:'rem',k:'key'}, yes:'Will the scale stay <b>balanced</b>?', yesIf:'='},
+   {type:'change', L:[CK(),CK(),PL()], R:[CK(),PL()], clue:[[[CK()],[PL(),PL()]]], act:{side:'both',op:'rem',k:'cookie'}, yes:'Will the <b>left</b> side still be <b>down</b>?', yesIf:'L'},
+  ]},
+ ]},
+ {id:3, icon:'🟰', name:'Balance Puzzles', intro:{easy:'Look at what we know. Then think!', medium:'Add, take away, think!', hard:'Super puzzles! Use what we know.'}, sets:[
+  {tier:'easy', qs:[
+   {type:'puzzle', know:[[[SQ(2)],[CI(2)]]], L:[CI(2)], R:[SQ(2)], ask:'flat', tip:`Swapping sides does not change the weight. They are <b>still the same</b>.`},
+   {type:'puzzle', know:[[[TR(3)],[SQ(1)]]], L:[SQ(1)], R:[TR(3)], ask:'which', tip:`The triangle is heavier. It goes down on <b>any</b> side!`},
+   {type:'puzzle', know:[[[SQ(2),CI(1)],[TR(1.5),TR(1.5)]]], L:[CI(1),SQ(2)], R:[TR(1.5),TR(1.5)], ask:'flat', tip:`We only moved them around. Same things, <b>same weight</b>.`},
+   {type:'puzzle', know:[[[SQ(2)],[CI(2)]]], L:[SQ(2),SQ(2)], R:[CI(2),CI(2)], ask:'flat', tip:`One square = one circle. So two squares = <b>two circles</b>.`},
+   {type:'puzzle', know:[[[SQ(2)],[CI(2)]]], L:[SQ(2),SQ(2)], R:[CI(2),CI(2),CI(2)], ask:'which', tip:`Two squares are the same as two circles. The <b>extra circle</b> makes that side heavier.`},
+  ]},
+  {tier:'medium', qs:[
+   {type:'puzzle', know:[[[AP()],[SQ(3)]]], L:[AP(),CK()], R:[SQ(3),CK()], ask:'flat', tip:`We added a cookie to <b>both</b> sides. It stays balanced!`},
+   {type:'puzzle', know:[[[AP()],[SQ(3)]]], L:[AP(),CK()], R:[SQ(3)], ask:'which', tip:`The apple and the square are the same. The <b>cookie</b> side is heavier.`},
+   {type:'puzzle', know:[[[CI(1),TR(2)],[SQ(3)]]], L:[CI(1)], R:[SQ(3)], ask:'which', tip:`We took the triangle away. That side is <b>lighter</b> now, so it goes up.`},
+   {type:'puzzle', know:[[[CI(1),CI(1)],[TR(2)]]], L:[CI(1)], R:[TR(2)], ask:'which', tip:`One circle is only <b>half</b> of the triangle. The triangle side goes down.`},
+   {type:'puzzle', know:[[[AP()],[PL(),PL(),PL()]]], L:[AP()], R:[PL(),PL(),PL()], ask:'size', tip:`A scale tells us about <b>heavy</b>, not about <b>big</b>!`},
+  ]},
+  {tier:'hard', qs:[
+   {type:'puzzle', know:[[[SQ(2)],[CI(1),CI(1)]]], L:[SQ(2),CI(1)], R:[CI(1),CI(1),CI(1)], ask:'flat', tip:`Swap the square for <b>two circles</b>. Then both sides have three circles!`},
+   {type:'puzzle', know:[[[SQ(2)],[CI(1),CI(1)]]], L:[SQ(2),SQ(2)], R:[CI(1),CI(1),CI(1)], ask:'which', tip:`Two squares are the same as <b>four</b> circles. Four is more than three.`},
+   {type:'puzzle', know:[[[SQ(2)],[CI(2)]],[[CI(2)],[TR(2)]]], L:[SQ(2)], R:[TR(2)], ask:'flat', tip:`Square = circle, and circle = triangle. So square = <b>triangle</b>!`},
+   {type:'puzzle', know:[[[SQ(3)],[CI(2)]],[[CI(2)],[TR(1)]]], L:[SQ(3)], R:[TR(1)], ask:'which', tip:`The square is heavier than the circle, and the circle is heavier than the triangle. So the <b>square</b> is the heaviest.`},
+   {type:'puzzle', know:[[[AP()],[CI(1),CI(1),CI(1)]],[[CI(1)],[PL()]]], L:[AP()], R:[PL(),PL(),PL()], ask:'flat', tip:`Apple = three circles. Each circle = a plum. So apple = <b>three plums</b>!`},
+   {type:'puzzle', know:[[[SQ(3)],[CI(1),CI(1),CI(1)]]], L:[SQ(3)], R:[CI(1),CI(1),CI(1),CI(1)], ask:'which', tip:`The square is the same as <b>three</b> circles. Four circles are more.`},
+  ]},
+ ]},
+ {id:4, icon:'📶', name:'Light to Heavy', intro:{easy:'Look at the scales. Find the heaviest or the lightest!', medium:'Put them in order, from light to heavy!', hard:'Only two scales! Think hard.'}, sets:[
+  {tier:'easy', qs:[
+   {type:'order3', items:[I('apple',1.8,3),I('plum',1.1,1),I('cookie',1.6,2)], know:[[0,1],[1,2],[0,2]], ask:'heaviest'},
+   {type:'order3', items:[CI(1),SQ(3),TR(2)], know:[[0,1],[1,2],[0,2]], ask:'lightest'},
+   {type:'order3', items:[I('square',2.2,1,'sponge'),I('circle',1.0,4,'metal'),I('key',1.2,2)], know:[[0,1],[1,2],[0,2]], ask:'heaviest'},
+   {type:'order3', items:[I('cookie',1.6,2),I('key',1.2,1),I('plum',1.1,3)], know:[[0,1],[1,2],[0,2]], ask:'lightest'},
+   {type:'order3', items:[I('apple',1.8,5),I('triangle',2.4,1,'sponge'),I('plum',1.1,2)], know:[[0,1],[1,2],[0,2]], ask:'lightest'},
+  ]},
+  {tier:'medium', qs:[
+   {type:'order3', items:[I('apple',1.8,3),I('plum',1.1,1),I('cookie',1.6,2)], know:[[0,1],[1,2],[0,2]], ask:'order'},
+   {type:'order3', items:[SQ(3),CI(1),TR(2)], know:[[0,1],[1,2],[0,2]], ask:'order'},
+   {type:'order3', items:[I('circle',2.3,1,'sponge'),I('key',1.2,2),I('square',1.0,3,'metal')], know:[[0,1],[1,2],[0,2]], ask:'order'},
+   {type:'order3', items:[I('plum',1.1,2),I('key',1.2,1),I('apple',1.8,4)], know:[[0,1],[1,2],[0,2]], ask:'order'},
+   {type:'order3', items:[I('triangle',2.4,1,'sponge'),I('cookie',1.6,3),I('plum',1.1,2)], know:[[0,1],[1,2],[0,2]], ask:'order'},
+  ]},
+  {tier:'hard', qs:[
+   {type:'order3', items:[I('apple',1.8,3),I('cookie',1.6,2),I('key',1.2,1)], know:[[0,1],[1,2]], ask:'order'},
+   {type:'order3', items:[SQ(1),CI(2),TR(3)], know:[[1,0],[2,1]], ask:'order'},
+   {type:'order3', items:[I('circle',1.0,3,'metal'),I('plum',1.1,2),I('square',2.4,1,'sponge')], know:[[0,1],[1,2]], ask:'lightest'},
+   {type:'order3', items:[I('plum',1.1,2),I('key',1.2,1),I('cookie',1.6,3)], know:[[0,1],[2,0]], ask:'heaviest'},
+   {type:'order3', items:[I('apple',1.8,3),I('plum',1.1,2),I('key',1.2,1)], know:[[0,1],[0,2]], ask:'need'},
+   {type:'order3', items:[I('cookie',1.6,3),I('plum',1.1,2),I('key',1.2,1)], know:[[0,1],[1,2]], ask:'need'},
+  ]},
+ ]},
+ {id:5, icon:'🧊', name:'Count the Cubes', intro:{easy:'Add cubes until it balances. Then count!', medium:'Count the cubes. Which is heavier?', hard:'Cube puzzles! Think hard.'}, sets:[
+  {tier:'easy', qs:[
+   {type:'measure', obj:I('plum',1.3,2)},
+   {type:'measure', obj:I('cookie',1.7,4)},
+   {type:'measure', obj:I('square',2.4,1,'sponge')},
+   {type:'measure', obj:I('apple',2.0,6)},
+   {type:'measure', obj:I('circle',1.1,5,'metal')},
+  ]},
+  {tier:'medium', qs:[
+   {type:'cubecmp', a:[I('apple',2.0,6),6], b:[I('cookie',1.7,4),4], ask:'which'},
+   {type:'cubecmp', a:[I('triangle',2.4,1,'sponge'),1], b:[I('key',1.2,2),2], ask:'which'},
+   {type:'cubecmp', a:[I('plum',1.3,2),2], b:[I('key',1.2,2),2], ask:'same'},
+   {type:'cubecmp', a:[I('circle',2.4,2,'sponge'),2], b:[I('square',1.0,7,'metal'),7], ask:'which'},
+   {type:'cubecmp', a:[I('cookie',1.7,4),4], b:[I('apple',2.0,6),6], ask:'same'},
+  ]},
+  {tier:'hard', qs:[
+   {type:'cubecmp', a:[I('apple',2.0,6),6], b:[I('cookie',1.7,4),4], ask:'more'},
+   {type:'cubecmp', a:[I('circle',1.1,5,'metal'),5], b:[I('plum',1.3,2),2], ask:'more'},
+   {type:'units', obj:I('apple',2.0,6), ask:'both'},
+   {type:'units', obj:I('cookie',1.7,4), ask:'bigger'},
+   {type:'units', obj:I('apple',2.0,6), ask:'mixed'},
+   {type:'measure', obj:I('square',1.1,7,'metal')},
+  ]},
+ ]},
+ {id:6, icon:'🔢', name:'Number Scale', intro:{easy:'Count the cubes. Will it balance?', medium:'Numbers on the scale! Will it balance?', hard:'Number puzzles! Find the missing number.'}, sets:[
+  {tier:'easy', qs:[
+   {type:'nscale', L:[CU(),CU(),CU(),GC(),GC()], R:[CU(),CU(),CU(),CU(),CU()], ask:'yes', say:'3 plus 2 cubes, and 5 cubes'},
+   {type:'nscale', L:[CU(),CU(),GC(),GC()], R:[CU(),CU(),CU(),CU(),CU()], ask:'yes', say:'2 plus 2 cubes, and 5 cubes'},
+   {type:'nscale', L:[CU(),CU(),CU(),CU()], R:[CU(),GC(),GC(),GC()], ask:'yes', say:'4 cubes, and 1 plus 3 cubes'},
+   {type:'nscale', L:[CU(),CU(),CU(),GC(),GC(),GC()], R:[CU(),CU(),CU(),CU(),CU(),CU(),CU()], ask:'yes', say:'3 plus 3 cubes, and 7 cubes'},
+   {type:'nscale', L:[CU(),CU(),GC(),GC(),GC()], R:[CU(),CU(),CU(),CU(),GC()], ask:'yes', say:'2 plus 3 cubes, and 4 plus 1 cubes'},
+  ]},
+  {tier:'medium', qs:[
+   {type:'nscale', L:[NU(4,1),NU(1,1)], R:[NU(5,1)], ask:'yes'},
+   {type:'nscale', L:[NU(5,1)], R:[NU(4,1),NU(1,1)], ask:'yes'},
+   {type:'nscale', L:[NU(2),NU(3)], R:[NU(4),NU(1)], ask:'yes'},
+   {type:'nscale', L:[NU(6)], R:[NU(3),NU(2)], ask:'yes'},
+   {type:'nscale', L:[NU(3),NU(4)], R:[NU(7)], ask:'yes'},
+  ]},
+  {tier:'hard', qs:[
+   {type:'nscale', L:[NU(6)], R:[NU(2),NU(null)], ask:'missing', ans:4},
+   {type:'nscale', L:[NU(8)], R:[NU(null),NU(5)], ask:'missing', ans:3},
+   {type:'nscale', L:[NU(null)], R:[NU(4),NU(3)], ask:'missing', ans:7},
+   {type:'nscale', L:[NU(7)], R:[], ask:'ways', target:7, say:'7, and two numbers you choose'},
+   {type:'nscale', L:[NU(7)], R:[NU(3),NU(3)], ask:'which'},
+   {type:'nscale', L:[NU(8)], R:[NU(5)], ask:'more'},
+  ]},
+ ]},
+ {id:7, icon:'🏆', name:'Balance Master'},
+];
+const MAPPOS = [[13,86],[24,68],[40,78],[56,62],[72,72],[86,48],[72,26],[50,20]];
+
+/* ============ 3. SAVE & SOUND ============ */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem('bunnyBalance2'))||{carrots:0,done:{}} }catch(e){ return {carrots:0,done:{}} } },
+  set(v){ try{ localStorage.setItem('bunnyBalance2',JSON.stringify(v)) }catch(e){} }
+};
+let save = store.get();
+const UNLOCK_ALL = /[?&]all\b/.test(location.search);
+let lastSaid = '', lastAt = 0, sayTimer = null;
+function say(text){
+  const t = text.replace(/<[^>]+>/g,'').replace(/[⬆️⬇️↔️😮🥕]/g,'').trim();
+  const now = Date.now();
+  if(t===lastSaid && now-lastAt < 2500) return;          // stop double-speaking
+  lastSaid = t; lastAt = now;
+  try{
+    clearTimeout(sayTimer); speechSynthesis.cancel();
+    sayTimer = setTimeout(()=>{                            // small gap after cancel avoids Chrome repeat bug
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang='en-US'; u.rate=0.81; u.pitch=1.15;
+      const vs = speechSynthesis.getVoices();
+      const v = vs.find(v=>/en-US/i.test(v.lang) && /female|samantha|zira|aria|jenny/i.test(v.name)) || vs.find(v=>/^en/i.test(v.lang));
+      if(v) u.voice=v;
+      speechSynthesis.speak(u);
+    }, 120);
+  }catch(e){}
+}
+let actx;
+function ding(ok){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    (ok?[660,880,1100]:[300,240]).forEach((f,i)=>{ const o=actx.createOscillator(), g=actx.createGain();
+      o.type='triangle'; o.frequency.value=f; o.connect(g); g.connect(actx.destination);
+      const t=actx.currentTime+i*0.12; g.gain.setValueAtTime(.16,t); g.gain.exponentialRampToValueAtTime(.001,t+.25); o.start(t); o.stop(t+.26); });
+  }catch(e){}
+}
+const PRAISE = ['Great job!','You did it!','Super!','Clever you!','Yes! Well done!','You are a scale expert!'];
+
+/* ============ 4. SCREENS ============ */
+const $ = s=>document.querySelector(s);
+function show(id){ document.querySelectorAll('.confetti').forEach(c=>c.remove()); document.body.classList.toggle('tutOn',id==='tut'); document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id)); $('#next').classList.remove('on'); window.scrollTo(0,0); }
+function updateCarrots(){ document.querySelectorAll('.carrotCount').forEach(e=>e.textContent=save.carrots); }
+$('#goMap').onclick = ()=>{ drawMap(); show('map'); say("Tap the pink stone to start!"); };
+$('#mapSay').onclick = ()=>say('Tap a stone to play. Win carrots for Bunny!');
+$('#backMap').onclick = $('#doneMap').onclick = $('#tutBack').onclick = ()=>{ speechSynthesis.cancel(); drawMap(); show('map'); };
+const isPhone = ()=>window.innerWidth < 760;
+
+function warnOrder(prev, i, go){
+  const t = `Wait! Have you practiced <b>${prev.name.replace(/\?$/,'')}</b>? It is best to go <b>in order</b>, one stone at a time.`;
+  $('#warnText').innerHTML = t;
+  $('#warnBack').textContent = `◀ Go to ${prev.name}`;
+  $('#warnBack').onclick = ()=>{ $('#warn').classList.remove('on'); prev.tut ? startTut() : startLevel(prev); };
+  $('#warnGo').onclick = ()=>{ $('#warn').classList.remove('on'); go(); };
+  $('#warn').classList.add('on'); lastSaid=''; say(t);
+}
+function drawMap(){
+  const wrap = $('#mapWrap');
+  wrap.querySelectorAll('.stone').forEach(s=>s.remove());
+  const pts = MAPPOS.map(([x,y])=>`${x},${y}`).join(' ');
+  $('#mapPath').setAttribute('viewBox','0 0 100 100'); $('#mapPath').setAttribute('preserveAspectRatio','none');
+  $('#mapPath').innerHTML = `<polyline points="${pts}" fill="none" stroke="#3674a4" stroke-opacity=".45" stroke-width="2.4" stroke-dasharray="1.5 2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  let bunnyAt = LEVELS.length-1;
+  LEVELS.forEach((lv,i)=>{
+    const ready = lv.tut || !!lv.sets;
+    const playable = ready;
+    const firstTodo = LEVELS.findIndex(l=>(l.tut||l.sets) && !save.done[l.id]);
+    const isNext = i===firstTodo;
+    const b = document.createElement('button');
+    b.className = 'stone ' + (lv.tut?'tut ':'') + (playable ? (isNext?'open':'') : 'locked');
+    b.style.left = MAPPOS[i][0]+'%'; b.style.top = MAPPOS[i][1]+'%';
+    b.innerHTML = `${playable||save.done[lv.id] ? lv.icon : '🔒'}<small>${lv.name}</small>` + (save.done[lv.id] ? `<span class="stars">${'⭐'.repeat(save.done[lv.id])}</span>` : '');
+    b.onclick = ()=>{
+      if(!ready){ say('Coming soon!'); return; }
+      const go = ()=> lv.tut ? startTut() : startLevel(lv);
+      const skipped = LEVELS.slice(0,i).filter(l=>(l.tut||l.sets) && !save.done[l.id]);
+      if(skipped.length && !UNLOCK_ALL) warnOrder(skipped[0], i, go); else go();
+    };
+    wrap.appendChild(b);
+    if(isNext) bunnyAt = i;
+  });
+  const mb = $('#mapBunny'); mb.style.left = MAPPOS[bunnyAt][0]+'%'; mb.style.top = MAPPOS[bunnyAt][1]+'%';
+  updateCarrots();
+}
+
+/* ============ 5. SCALE WIDGET ============ */
+function stackHTML(a){ if(a.length>3 && a.every(i=>i.k==='cube'||i.k==='bigcube')) { const groups=[]; a.forEach((i,k)=>{ if(k===0||a[k-1].c!==i.c||a[k-1].k!==i.k) groups.push([]); groups[groups.length-1].push(i); });
+    const px = groups.length>1 ? 20 : 24, per = groups.length>1 ? 4 : 5;
+    return `<span class="cubes">${groups.map(g=>(()=>{ const z = g[0].k==='bigcube' ? Math.round(px*1.5) : px; return `<span class="grp" style="max-width:${z*Math.min(per,g.length)}px">${g.map(i=>`<span class="item" style="width:${z}px;height:${z}px">${SVG.cube(i.k==='bigcube',i.c)}</span>`).join('')}</span>`; })()).join('')}</span>`; }
+  const w=a.reduce((t,i)=>t+30*i.s,0); const f=Math.min(1,118/(w||1)); return a.map(i=>itemHTML(i,f)).join(''); }
+function sum(a){ return a.reduce((t,i)=>t+i.w,0); }
+function makeScale(q){
+  const el = document.createElement('div'); el.className='scale';
+  el.innerHTML = `<div class="foot"></div><div class="base"></div><div class="post"></div><div class="beam"></div><div class="hub"></div><div class="qmark">?</div>
+    <div class="pan" data-side="L"><div class="stack"></div><div class="rod"></div><div class="dish"></div></div>
+    <div class="pan" data-side="R"><div class="stack"></div><div class="rod"></div><div class="dish"></div></div>`;
+  const [pl,pr] = el.querySelectorAll('.pan');
+  el.tilt = function(deg){
+    const cx=140, cy=141, len=106, r=deg*Math.PI/180;
+    el.querySelector('.beam').style.transform = `rotate(${-deg}deg)`;
+    pl.style.left = (cx - len*Math.cos(r) - 60)+'px'; pl.style.top = (cy + len*Math.sin(r) - 50)+'px';
+    pr.style.left = (cx + len*Math.cos(r) - 60)+'px'; pr.style.top = (cy - len*Math.sin(r) - 50)+'px';
+  };
+  el.draw = ()=>{ pl.querySelector('.stack').innerHTML=stackHTML(q.L); pr.querySelector('.stack').innerHTML=stackHTML(q.R); };
+  el.real = ()=>{ const d=sum(q.L)-sum(q.R); el.tilt(d>0?14:d<0?-14:0); };
+  el.draw(); el.tilt(0);
+  return el;
+}
+function heavierSide(q){ const d=sum(q.L)-sum(q.R); return d>0?'L':d<0?'R':'='; }
+function biggerSide(q){ const a=q.L.reduce((t,i)=>t+i.s*i.s,0), b=q.R.reduce((t,i)=>t+i.s*i.s,0); return a>b?'L':'R'; }
+
+/* ============ 6. TUTORIAL: Meet the Scale ============ */
+const APPLE = ()=>I('apple',1.8,3), PLUM = ()=>I('plum',1.1,1);
+let tut;
+function describe(L,R){
+  const cap = x=>x[0].toUpperCase()+x.slice(1);
+  const a = cap(groupName(L,true)), b = groupName(R,true);
+  if(!L.length && !R.length) return 'The scale is empty. It is balanced.';
+  const d = sum(L)-sum(R);
+  if(d===0) return `It is balanced! <b>${a}</b> ${isPlural(L)?'weigh':'weighs'} <b>the same</b> as <b>${b}</b>.`;
+  const [hv,lt,hvArr] = d>0 ? [a,b,L] : [cap(b),a.toLowerCase(),R];
+  if(!(d>0?R:L).length) return `<b>${hv}</b> side goes <b>down</b>. Something is heavier than nothing!`;
+  return `<b>${hv}</b> ${isPlural(hvArr)?'are':'is'} <b>heavier</b> than <b>${lt}</b>. The ${new Set(hvArr.map(oneName)).size===1?oneName(hvArr[0]):'heavier'} side goes <b>down</b>.`;
+}
+// each step: words to say, which button the child must press (need), how many times (until)
+const TUT_STEPS = [
+  {txt:`This is a <b>balance scale</b>. It tells us which thing is <b>heavier</b>. Tap <b>Next</b>!`, need:'next'},
+  {txt:`Put an <b>apple</b> on <b>this side</b> ⬅️. Tap the apple button!`, need:'addLapple', until:s=>s.L.length===1},
+  {txt:`Now put another <b>apple</b> on the other side.`, need:'addRapple', until:s=>s.R.length===1},
+  {txt:null, need:'next'},                                                       // narrates "same"
+  {txt:`Take the apple off the <b>other side</b> ➡️.`, need:'remR', until:s=>s.R.length===0},
+  {txt:`Now put a <b>plum</b> on the <b>other side</b> ➡️.`, need:'addRplum', until:s=>s.R.length===1},
+  {txt:null, after:`The <b>plum</b> is <b>lighter</b>. The plum side goes <b>up</b>.`, need:'next'},
+  {txt:`Add more <b>plums</b>, one by one. Watch the scale!`, need:'addRplum', until:s=>s.R.length===3, narrate:true},
+  {txt:null, need:'next'},
+  {txt:`Add <b>one more</b> plum. What will happen?`, need:'addRplum', until:s=>s.R.length===4},
+  {txt:null, after:`Now the <b>apple</b> is <b>lighter</b>. It goes <b>up</b>.`, need:'next'},
+  {txt:`Take <b>one plum</b> away. What will happen?`, need:'remR', until:s=>s.R.length===3},
+  {txt:null, after:`Again!`, need:'next'},
+  {txt:`This is Bunny's pretend scale. Real apples and plums can be big or small, so <b>try it with a real scale in class!</b> Now <b>you</b> play! Add or take away. Tap <b>Done</b> when you finish.`, need:'free'},
+];
+function startTut(){
+  tut = {step:0, q:{L:[],R:[]}};
+  show('tut');
+  const box = $('#tutScale'); box.innerHTML=''; tut.sc = makeScale(tut.q); box.appendChild(tut.sc);
+  $('#tutSay').onclick = ()=>{ lastSaid=''; say($('#tutText').innerHTML); };
+  runStep();
+}
+function tutTalk(html){ $('#tutText').innerHTML = html; say(html); }
+function runStep(){
+  const st = TUT_STEPS[tut.step];
+  $('#tutDots').innerHTML = TUT_STEPS.map((_,i)=>`<i class="${i<tut.step?'done':''}"></i>`).join('');
+  if(st.txt) tutTalk(st.txt);
+  else tutTalk(describe(tut.q.L,tut.q.R) + (st.after ? ' '+st.after : ''));
+  drawTutBtns(st.need);
+}
+function drawTutBtns(need){
+  const free = need==='free';
+  const B = [
+    ['addLapple', `${itemHTML(APPLE())}<span>+ apple<span class="side">this side ⬅️</span></span>`],
+    ['remL',      `<span>− take away<span class="side">⬅️ this side</span></span>`],
+    ['addRapple', `${itemHTML(APPLE())}<span>+ apple<span class="side">other side ➡️</span></span>`],
+    ['addRplum',  `${itemHTML(PLUM())}<span>+ plum<span class="side">other side ➡️</span></span>`],
+    ['remR',      `<span>− take away<span class="side">other side ➡️</span></span>`],
+  ];
+  const box = $('#tutBtns'); box.innerHTML='';
+  B.forEach(([id,html])=>{
+    const b=document.createElement('button'); b.className='tbtn'+(need===id?' go':''); b.innerHTML=html;
+    b.disabled = !(free || need===id);
+    if(free && ((id==='remL'&&!tut.q.L.length)||(id==='remR'&&!tut.q.R.length))) b.disabled=true;
+    if(free && id.startsWith('add') && (id[3]==='L'?tut.q.L:tut.q.R).length>=6) b.disabled=true;
+    b.onclick=()=>tutAct(id); box.appendChild(b);
+  });
+  if(need==='next'){ const b=document.createElement('button'); b.className='tbtn go'; b.textContent='Next ➜'; b.onclick=()=>{tut.step++; runStep();}; box.appendChild(b); }
+  if(free){ const b=document.createElement('button'); b.className='tbtn go'; b.textContent='✅ Done'; b.onclick=finishTut; box.prepend(b); }
+}
+function tutAct(id){
+  const q = tut.q;
+  if(id==='addLapple') q.L.push(APPLE());
+  if(id==='addRapple') q.R.push(APPLE());
+  if(id==='addRplum')  q.R.push(PLUM());
+  if(id==='remL') q.L.pop();
+  if(id==='remR') q.R.pop();
+  tut.sc.draw(); tut.sc.real();
+  const st = TUT_STEPS[tut.step];
+  if(st.need==='free'){ drawTutBtns('free'); tut.moves=(tut.moves||0)+1; const tip = tut.moves%3===0 ? ' Real apples and plums are not all the same. <b>Try it with a real scale in class!</b>' : ''; setTimeout(()=>tutTalk(describe(q.L,q.R)+tip),700); return; }
+  if(st.until && st.until(q)){ setTimeout(()=>{ tut.step++; runStep(); }, 1300); drawTutBtns('wait'); }
+  else if(st.narrate) setTimeout(()=>tutTalk(describe(q.L,q.R)),700);
+}
+function finishTut(){
+  save.done[0]=3; save.carrots+=3; store.set(save);
+  $('#doneSpeech').innerHTML = `Great! Now you know the scale.<br><b>Heavier</b> goes down. <b>Lighter</b> goes up. <b>The same</b> is balanced!`;
+  $('#doneCarrots').textContent='🥕🥕🥕'; show('done'); say('Great! Heavier goes down. Lighter goes up. The same is balanced!'); confetti();
+}
+
+/* ============ 7. PLAYING A LEVEL ============ */
+let cur = null;
+function startLevel(lv){
+  const per = isPhone()?1:3, pages=[];
+  lv.sets.forEach(set=>{ for(let i=0;i<set.qs.length;i+=per) pages.push({tier:set.tier, qs:set.qs.slice(i,i+per), first:i===0}); });
+  let n=0; pages.forEach(p=>p.qs.forEach(q=>q.no=++n));
+  cur = {lv, pages, page:0, firstTry:0, total:0, doneQ:new Set(), skipQ:new Set(), nQ:n};
+  show('play'); renderPage();
+}
+function drawQnav(){
+  const nav=$('#qnav'); nav.innerHTML='';
+  let lastTier=null;
+  cur.pages.forEach((pg,pi)=>pg.qs.forEach(q=>{
+    if(lastTier && pg.tier!==lastTier){ const g=document.createElement('span'); g.className='gap'; nav.appendChild(g); }
+    lastTier=pg.tier;
+    const b=document.createElement('button'); b.textContent=q.no;
+    if(cur.doneQ.has(q.no)) b.className='done'; else if(cur.skipQ.has(q.no)) b.className='skip-d';
+    if(pi===cur.page) b.classList.add('here');
+    b.onclick=()=>{ cur.page=pi; renderPage(); };
+    nav.appendChild(b);
+  }));
+  const h=nav.querySelector('.here'); if(h) h.scrollIntoView({inline:'center',block:'nearest'});
+}
+function pageDone(i){ return cur.pages[i].qs.every(q=>cur.doneQ.has(q.no)||cur.skipQ.has(q.no)); }
+function renderPage(){
+  const pg = cur.pages[cur.page];
+  $('#lvlTitle').textContent = `${cur.lv.icon} ${cur.lv.name}`;
+  const tag=$('#tierTag'); tag.className='tierTag t-'+pg.tier; tag.textContent={easy:'Easy',medium:'Medium',hard:'Tricky!'}[pg.tier];
+  $('#dots').innerHTML = '';
+  drawQnav();
+  const box=$('#cards'); box.innerHTML=''; box.style.setProperty('--cols', Math.min(pg.qs.length, isPhone()?1:3));
+  if(pg.qs.length<3 && !isPhone()) box.style.maxWidth = (pg.qs.length*400)+'px'; else box.style.maxWidth='';
+  cur.left = pg.qs.length;
+  pg.qs.forEach(q=>box.appendChild(makeCard(q)));
+  $('#next').classList.toggle('on', pageDone(cur.page));
+  if(pg.first) say((cur.lv.intro||{easy:'Guess first. Then weigh it!', medium:'Which is bigger? Which is heavier?', hard:'Tricky scales! Look carefully.'})[pg.tier]);
+}
+$('#next').onclick = ()=>{
+  $('#next').classList.remove('on');
+  const n=cur.pages.length;
+  for(let k=1;k<=n;k++){ const i=(cur.page+k)%n; if(!pageDone(i)){ cur.page=i; renderPage(); return; } }
+  finishLevel();
+};
+function finishLevel(){
+  const stars = cur.firstTry>=cur.nQ*0.8?3:cur.firstTry>=cur.nQ*0.5?2:1;
+  save.done[cur.lv.id]=Math.max(stars,save.done[cur.lv.id]||0); store.set(save);
+  $('#doneSpeech').innerHTML = `Hooray! You finished <b>${cur.lv.name}</b>!<br>Bunny is so happy! ${'⭐'.repeat(stars)}`;
+  $('#doneCarrots').textContent='🥕'.repeat(cur.doneQ.size);
+  show('done'); say('Hooray! You finished the level. Bunny is so happy!'); confetti();
+}
+function confetti(){
+  for(let i=0;i<40;i++){ const c=document.createElement('div'); c.className='confetti';
+    c.textContent=['🥕','⭐','🎉','💜','💖'][i%5]; c.style.left=Math.random()*100+'vw';
+    c.style.animationDuration=(2+Math.random()*2)+'s'; c.style.animationDelay=Math.random()+'s';
+    document.body.appendChild(c); setTimeout(()=>c.remove(),5000); }
+}
+
+/* ---------- one question card: every question has its own answer buttons ---------- */
+function makeCard(q0){
+  const q = {...q0, L:(q0.L||[]).map(i=>({...i})), R:(q0.R||[]).map(i=>({...i}))};
+  const card = document.createElement('div'); card.className='card c'+((q.no-1)%3);
+  card.innerHTML = `<div class="num">${q.no}</div><div class="prompt"><button class="say">🔊</button><span class="ptext"></span></div>
+    <div class="scaleHere"></div><div class="choices"></div>
+    <div class="hint"><button class="say">🔊</button><span class="htext"></span></div><div class="praise"></div><button class="skip">Skip ⏭</button>`;
+  const sc = makeScale(q); card.querySelector('.scaleHere').appendChild(sc);
+  if(q.clue){ const cl=document.createElement('div'); cl.className='clue';
+    cl.innerHTML = '🔎 Clue: ' + q.clue.map(([a,b])=>`<span class="crow">${a.map(i=>itemHTML({...i,s:1})).join('')}<span class="eq">=</span>${b.map(i=>itemHTML({...i,s:1})).join('')}</span>`).join('');
+    card.querySelector('.scaleHere').before(cl);
+    card._clueText = ' Clue: ' + q.clue.map(([a,b])=>`${groupName(a,true)} weighs the same as ${groupName(b,true)}`).join('. ') + '.'; }
+  const pans = sc.querySelectorAll('.pan'), choices = card.querySelector('.choices');
+  let [A,B] = pair(q);
+  const setPrompt = t=>{ card.querySelector('.ptext').innerHTML=t; card._prompt=t; };
+  card.querySelector('.prompt .say').onclick = ()=>{ lastSaid=''; say(card._prompt + (card._clueText||'')); };
+  card.querySelector('.hint .say').onclick = ()=>{ lastSaid=''; say(card._hint); };
+  let missed=false;
+  function hint(t,soft){ card._hint=t; const h=card.querySelector('.hint'); h.querySelector('.htext').innerHTML=t; h.classList.add('on'); ding(false); say(t); if(!soft) missed=true; }
+  function clearHint(){ card.querySelector('.hint').classList.remove('on'); }
+  card.querySelector('.skip').onclick = ()=>{
+    clearHint(); card.classList.add('skipped'); choices.querySelectorAll('button').forEach(b=>b.disabled=true);
+    lastSaid=''; say("OK! Let's skip this one.");
+    if(!cur.doneQ.has(q.no)) cur.skipQ.add(q.no); drawQnav();
+    if(!card.isConnected) return;
+    if(--cur.left===0) setTimeout(()=>$('#next').classList.add('on'), 800);
+  };
+  function solved(){
+    clearHint(); card.classList.add('solved');
+    const p = PRAISE[Math.floor(Math.random()*PRAISE.length)];
+    const pr = card.querySelector('.praise'); pr.textContent='🥕 '+p; pr.classList.add('on');
+    ding(true); say(p);
+    if(!cur.doneQ.has(q.no)){ giveCarrot(card); cur.total++; if(!missed) cur.firstTry++; }
+    cur.doneQ.add(q.no); cur.skipQ.delete(q.no); drawQnav();
+    choices.querySelectorAll('button').forEach(b=>b.disabled=true);
+    if(!card.isConnected) return;
+    if(--cur.left===0) setTimeout(()=>$('#next').classList.add('on'), 1300);
+  }
+  // build answer buttons; opts = [{a, html}] ; check(a, btn)
+  function ask(opts, check){
+    choices.innerHTML='';
+    opts.forEach(o=>{ const b=document.createElement('button'); b.className='choice'; b.innerHTML=o.html;
+      b.onclick=()=>check(o.a,b); choices.appendChild(b); });
+  }
+  const sideBtn = (side)=>{ const arr = side==='L'?q.L:q.R; const nm = mixed(q) ? (side==='L'?'⬅️ left side':'right side ➡️') : groupName(arr).replace(/the /g,''); return {a:side, html:`<span class="pics">${arr.map(i=>itemHTML({...i,s:1})).join('')}</span><span>${nm}</span>`}; };
+  const two = [sideBtn('L'), sideBtn('R')];
+  const wrong = b=>{ b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),400); };
+  const good = (b,side)=>{ b.classList.add('right'); if(side) pans.forEach(p=>p.classList.toggle('good',p.dataset.side===side)); };
+
+  if(q.type==='guess'){
+    setPrompt(`Which is heavier: <b>${A}</b> or <b>${B}</b>? <b>Guess!</b>`);
+    ask(two,(a,b)=>{
+      b.classList.add('picked');
+      choices.querySelectorAll('button').forEach(x=>x.disabled=true);
+      setTimeout(()=>{
+        setPrompt(`Good guess! Now let's <b>weigh</b> it.`);
+        choices.innerHTML=`<button class="weigh">⚖️ Weigh it!</button>`;
+        choices.firstChild.onclick=()=>{
+          choices.innerHTML=''; sc.real();
+          setTimeout(()=>{
+            const heavy=heavierSide(q);
+            setPrompt(`${a!==heavy?'Surprise! 😮 ':''}Look at the scale. Which is <b>heavier</b>?`);
+            ask(two,(a2,b2)=>{ if(a2===heavy){ good(b2,a2); solved(); } else { wrong(b2); hint(`The <b>heavier</b> one goes <b>DOWN</b> ⬇️. Which one is down?`); } });
+          },1200);
+        };
+      },500);
+    });
+  }
+
+  if(q.type==='bigheavy'){
+    sc.real();
+    const big=biggerSide(q), heavy=heavierSide(q);
+    setPrompt(`Which is <b>BIGGER</b>: <b>${A}</b> or <b>${B}</b>?`);
+    ask(two,(a,b)=>{
+      if(a!==big){ wrong(b); hint(`<b>Bigger</b> means it takes up <b>more space</b>. Look at the size, not the scale.`); return; }
+      clearHint(); b.classList.add('right');
+      setTimeout(()=>{
+        setPrompt(`Yes! Now, which is <b>HEAVIER</b>? Look at the scale.`);
+        ask(two,(a2,b2)=>{
+          if(a2===heavy){ good(b2,a2); solved(); card.querySelector('.praise').innerHTML += big===heavy?'<br><small>Big and heavy!</small>':'<br><small>Big is not always heavy!</small>'; }
+          else { wrong(b2); hint(`The <b>heavier</b> one makes the scale go <b>DOWN</b> ⬇️.`); }
+        });
+      },600);
+    });
+  }
+
+  if(q.type==='read'){
+    sc.real();
+    const heavy=heavierSide(q);
+    setPrompt(`Which is <b>heavier</b>: <b>${A}</b> or <b>${B}</b>?`);
+    ask(two,(a,b)=>{ if(a===heavy){ good(b,a); solved(); } else { wrong(b); hint(`<b>More</b> things or <b>bigger</b> things are not always heavier. Which side is <b>DOWN</b> ⬇️?`); } });
+  }
+
+  if(q.type==='same'){
+    sc.real();
+    const heavy=heavierSide(q), isSame = heavy==='=';
+    setPrompt(`Do <b>${A}</b> and <b>${B}</b> weigh <b>the same</b>?`);
+    ask([{a:true,html:'✅ Yes<br><small>the same</small>'},{a:false,html:'❌ No<br><small>not the same</small>'}],(a,b)=>{
+      if(a!==isSame){ wrong(b); hint(isSame ? `Look! The scale is <b>balanced</b> ↔️. Balanced means <b>the same</b> weight.` : `Look! One side is <b>down</b> ⬇️. So they are <b>not</b> the same.`); return; }
+      if(isSame){ b.classList.add('right'); solved(); return; }
+      clearHint(); b.classList.add('right');
+      setTimeout(()=>{
+        setPrompt(`Right, not the same! Which is <b>heavier</b>?`);
+        ask(two,(a2,b2)=>{ if(a2===heavy){ good(b2,a2); solved(); } else { wrong(b2); hint(`The <b>heavier</b> side goes <b>DOWN</b> ⬇️.`); } });
+      },600);
+    });
+  }
+
+  if(q.type==='updown'){
+    sc.real();
+    const up = heavierSide(q)==='L'?'R':'L', upName = up==='L'?A:B, other = up==='L'?B:A;
+    setTimeout(()=>{ const p=[...pans].find(p=>p.dataset.side===up); const t=document.createElement('div'); t.className='tag'; t.textContent='⬆️ UP'; p.appendChild(t); },900);
+    setPrompt(`<b>${upName[0].toUpperCase()+upName.slice(1)}</b> went <b>UP</b> ⬆️. Is it heavier or lighter than <b>${other}</b>?`);
+    ask([{a:'heavy',html:'🏋️ heavier'},{a:'light',html:'🪶 lighter'}],(a,b)=>{
+      if(a==='light'){ b.classList.add('right'); solved(); }
+      else { wrong(b); hint(`On a seesaw the <b>heavy</b> friend goes <b>down</b>. The side that goes <b>up</b> is <b>lighter</b>.`); }
+    });
+  }
+  const numBtns = (n)=>{ let opts=[n-1,n,n+1].filter(x=>x>0 && x<=10); while(opts.length<3) opts.push(Math.max(...opts)+1); return opts.sort(()=>Math.random()-.5).map(x=>({a:x,html:`<span style="font-size:28px">${x}</span>`})); };
+  /* ===== LEVEL 6: number scale ===== */
+  if(q.type==='nscale'){
+    const reveal=()=>{ sc.classList.remove('mystery'); sc.draw(); sc.real(); };
+    const spokenSides = ()=> q.say || `${groupName(q.L,true)}, and ${groupName(q.R,true)}`;
+    card._clueText = ' '+spokenSides()+'.';
+    const yn=[{a:true,html:'✅ Yes<br><small>balanced</small>'},{a:false,html:'❌ No<br><small>not balanced</small>'}];
+    if(q.ask==='yes'){
+      sc.classList.add('mystery');
+      const isNum = q.L[0].k==='num';
+      setPrompt(isNum ? `Will <b>${groupName(q.L)}</b> and <b>${groupName(q.R)}</b> balance?` : `Count the cubes. Will the scale <b>balance</b>?`);
+      ask(yn,(a,b)=>{ const eq=sum(q.L)===sum(q.R);
+        if(a===eq){ b.classList.add('right'); setTimeout(reveal,200); solved(); card.querySelector('.praise').innerHTML+=`<br><small>${sum(q.L)} ${eq?'=':'and'} ${sum(q.R)}${eq?'':' — not the same'}</small>`; }
+        else { wrong(b); hint(isNum ? `Work out each side: <b>${groupName(q.L)}</b> makes <b>${sum(q.L)}</b>. <b>${groupName(q.R)}</b> makes <b>${sum(q.R)}</b>. Are they the same?` : `Count each side: <b>${sum(q.L)}</b> cubes and <b>${sum(q.R)}</b> cubes. Are they the same?`); } });
+    }
+    if(q.ask==='which'){
+      sc.classList.add('mystery');
+      setPrompt(`Which side will go <b>down</b>: <b>${groupName(q.L)}</b> or <b>${groupName(q.R)}</b>?`);
+      ask([{a:'L',html:`⬅️ ${groupName(q.L)}`},{a:'R',html:`${groupName(q.R)} ➡️`}],(a,b)=>{
+        if(a===heavierSide(q)){ b.classList.add('right'); setTimeout(reveal,200); solved(); }
+        else { wrong(b); hint(`<b>${groupName(q.R)}</b> makes <b>${sum(q.R)}</b>. <b>7</b> is more than <b>${sum(q.R)}</b>. The bigger number is heavier.`); } });
+    }
+    if(q.ask==='missing'){
+      sc.classList.add('mystery');
+      const blank=[...q.L,...q.R].find(i=>i.n==null), known=sum(q.L.filter(i=>i.n!=null))+0;
+      setPrompt(`What number makes the scale <b>balance</b>? ⚖️`);
+      ask(numBtns(q.ans),(a,b)=>{
+        if(a===q.ans){ clearTimeout(card._rt); blank.n=a; blank.w=a; b.classList.add('right'); reveal(); solved(); card.querySelector('.praise').innerHTML+=`<br><small>${groupName(q.L)} = ${groupName(q.R)}</small>`; }
+        else { wrong(b); clearTimeout(card._rt); blank.n=a; blank.w=a; sc.classList.remove('mystery'); sc.draw(); sc.real();
+          card._rt=setTimeout(()=>{ if(card.classList.contains('solved')) return; blank.n=null; blank.w=0; sc.classList.add('mystery'); sc.draw(); sc.tilt(0); },1600);
+          hint(`Look! With <b>${a}</b> it does not balance. ${a>q.ans?'Too big! Try a smaller number.':'Too small! Try a bigger number.'}`); } });
+      blank.w=0;
+    }
+    if(q.ask==='more'){
+      sc.real();
+      setPrompt(`<b>8</b> and <b>5</b>. How many <b>more</b> on the <b>5</b> side to make it balance?`);
+      ask(numBtns(3),(a,b)=>{
+        if(a===3){ q.R.push(NU(3)); b.classList.add('right'); sc.draw(); sc.real(); solved(); card.querySelector('.praise').innerHTML+=`<br><small>8 = 5 + 3. Or take 3 away from the 8!</small>`; }
+        else { wrong(b); hint(`Count on from <b>5</b> up to <b>8</b>: 6, 7, 8. How many numbers did you say?`); } });
+    }
+    if(q.ask==='ways'){
+      const found=new Set(); let pick=[];
+      setPrompt(`Make <b>7</b> balance! Put <b>two numbers</b> on the other side. Find <b>3 ways</b>.`);
+      const wl=document.createElement('div'); wl.className='ways'; choices.after(wl);
+      const drawWays=()=>{ wl.innerHTML=[...found].map(w=>`<span>7 = ${w}</span>`).join('')+'<i>?</i>'.repeat(Math.max(0,3-found.size)); };
+      const tiles=()=>[1,2,3,4,5,6].map(n=>({a:n,html:itemHTML(NU(n))}));
+      const go=()=>{ ask(tiles(),(n,b)=>{
+        if(card._done) return;
+        pick.push(n); q.R=pick.map(x=>NU(x)); sc.draw(); sc.real();
+        if(pick.length<2) return;
+        choices.querySelectorAll('button').forEach(x=>x.disabled=true);
+        const key=[...pick].sort((x,y)=>x-y).join(' + ');
+        if(pick[0]+pick[1]===7){
+          if(found.has(key)) hint(`You found <b>${key}</b> already! Try different numbers.`,true);
+          else { found.add(key); clearHint(); ding(true); say(`Yes! 7 is the same as ${pick[0]} plus ${pick[1]}`); }
+          drawWays();
+        } else hint(`<b>${pick[0]} + ${pick[1]}</b> makes <b>${pick[0]+pick[1]}</b>. ${pick[0]+pick[1]>7?'Too heavy!':'Too light!'} Try again.`,true);
+        setTimeout(()=>{ if(found.size>=3){ card._done=true; solved(); card.querySelector('.praise').innerHTML+=`<br><small>So many ways to make 7!</small>`; } else { pick=[]; q.R=[]; sc.draw(); sc.real(); go(); } },1500);
+      }); };
+      drawWays(); sc.real(); go();
+    }
+  }
+
+  /* ===== LEVEL 5: cubes ===== */
+  const objName = o=>oneName(o);
+  const cubes = n=>n===1?'1 cube':n+' cubes';
+  const cubeRow = (o,n,big)=>`<div class="row"><span class="obj">${itemHTML({...o,s:1})}</span><span class="eq">=</span>${Array.from({length:n},()=>itemHTML(big?BC():CU())).join('')}<span class="n">${n}</span></div>`;
+  if(q.type==='measure'){
+    q.L=[q.obj]; q.R=[]; sc.draw(); sc.real();
+    setPrompt(`Add cubes 🟧 until the scale <b>balances</b>. Then tap <b>⚖️ It balances!</b>`);
+    const draw=()=>{
+      choices.innerHTML='';
+      [['add','➕'],['rem','➖']].forEach(([op,sym])=>{
+        const b=document.createElement('button'); b.className='choice tool';
+        b.innerHTML=`${sym} ${itemHTML(CU())}`;
+        b.disabled = op==='rem' ? !q.R.length : q.R.length>=10;
+        b.onclick=()=>{
+          if(card._done) return;
+          op==='add' ? q.R.push(CU()) : q.R.pop();
+          sc.draw(); sc.real(); draw();
+          const d=sum(q.L)-sum(q.R);
+          if(d<0) hint(`Too many cubes! The cube side went <b>down</b>. Take one away.`,true); else clearHint();
+        };
+        choices.appendChild(b);
+      });
+      const done=document.createElement('button'); done.className='choice'; done.innerHTML='⚖️ It balances!';
+      done.onclick=()=>{
+          if(card._done) return;
+          const d=sum(q.L)-sum(q.R);
+          if(d!==0){ wrong(done); hint(d>0?`Not yet! The <b>${objName(q.obj)}</b> side is still <b>down</b>. Add more cubes.`:`Not yet! The <b>cube</b> side is <b>down</b>. Take one away.`); return; }
+          { card._done=true; choices.querySelectorAll('button').forEach(x=>x.disabled=true);
+            setTimeout(()=>{ pans.forEach(p=>p.classList.add('good')); clearHint();
+              setPrompt(`It balances! How many cubes weigh the same as the <b>${objName(q.obj)}</b>?`); say(card._prompt);
+              ask(numBtns(q.obj.w),(a,bb)=>{ if(a===q.obj.w){ bb.classList.add('right'); solved(); card.querySelector('.praise').innerHTML+=`<br><small>The ${objName(q.obj)} weighs ${cubes(q.obj.w)}!</small>`; }
+                else { wrong(bb); hint(`Count the cubes on the scale. Touch each one: 1, 2, 3…`); } });
+            },500); }
+      };
+      choices.appendChild(done);
+    };
+    draw();
+  }
+  if(q.type==='cubecmp'){
+    sc.style.display='none';
+    const [oa,na]=q.a, [ob,nb]=q.b;
+    const box=document.createElement('div'); box.className='cubecard';
+    box.innerHTML=cubeRow(oa,na)+cubeRow(ob,nb);
+    card.querySelector('.scaleHere').before(box);
+    card._clueText=` The ${objName(oa)} weighs ${cubes(na)}. The ${objName(ob)} weighs ${cubes(nb)}.`;
+    const two=[{a:'a',html:`<span class="pics">${itemHTML({...oa,s:1})}</span><span>${objName(oa)}</span>`},{a:'b',html:`<span class="pics">${itemHTML({...ob,s:1})}</span><span>${objName(ob)}</span>`}];
+    if(q.ask==='which'){
+      setPrompt(`Which is <b>heavier</b>: the <b>${objName(oa)}</b> or the <b>${objName(ob)}</b>?`);
+      ask(two,(a,b)=>{ const right = na>nb?'a':'b'; if(a===right){ b.classList.add('right'); solved(); } else { wrong(b); hint(`<b>More</b> cubes means <b>heavier</b>. Count the cubes!`); } });
+    } else if(q.ask==='same'){
+      setPrompt(`Do the <b>${objName(oa)}</b> and the <b>${objName(ob)}</b> weigh <b>the same</b>?`);
+      ask([{a:true,html:'✅ Yes<br><small>the same</small>'},{a:false,html:'❌ No<br><small>not the same</small>'}],(a,b)=>{
+        if(a===(na===nb)){ b.classList.add('right'); solved(); } else { wrong(b); hint(na===nb?`Count: both have <b>${na}</b> cubes. Same cubes, <b>same weight</b>!`:`Count the cubes: <b>${na}</b> and <b>${nb}</b>. Not the same!`); } });
+    } else {
+      const big = na>nb?oa:ob, sm = na>nb?ob:oa, diff=Math.abs(na-nb);
+      setPrompt(`The <b>${objName(big)}</b> is heavier. How many <b>more</b> cubes?`);
+      ask(numBtns(diff),(a,b)=>{ if(a===diff){ b.classList.add('right'); solved(); } else { wrong(b); hint(`Match the cubes one by one. Count the <b>extra</b> cubes that have no partner.`); } });
+    }
+  }
+  if(q.type==='units'){
+    sc.style.display='none';
+    const o=q.obj, nS=o.w, nB=o.w/2;
+    const kn=document.createElement('div'); kn.className='known two';
+    const mk=(R)=>{ const m=document.createElement('div'); m.className='mini'; const ks=makeScale({L:[{...o,s:o.s*1.3}],R}); ks.real(); m.appendChild(ks); return m; };
+    if(q.ask==='mixed'){
+      kn.className='known';
+      kn.appendChild(mk([BC(),BC(),CU(),CU()]));
+      card.querySelector('.scaleHere').before(kn);
+      card._clueText=' Two big cubes and two small cubes balance the '+objName(o)+'.';
+      setPrompt(`Tom put <b>2 big cubes</b> and <b>2 small cubes</b>. He says: "The ${objName(o)} weighs <b>4 cubes</b>." Is that a good way to count?`);
+      ask([{a:true,html:'✅ Yes'},{a:false,html:'❌ No'}],(a,b)=>{ if(a===false){ b.classList.add('right'); solved(); card.querySelector('.praise').innerHTML+='<br><small>Use cubes that are all the same!</small>'; } else { wrong(b); hint(`Look! Some cubes are <b>big</b> and some are <b>small</b>. To count, all cubes must be <b>the same</b>.`); } });
+    } else {
+      kn.appendChild(mk(Array.from({length:nB},BC))); kn.appendChild(mk(Array.from({length:nS},CU)));
+      kn.insertAdjacentHTML('afterbegin',`<span class="lab">Tom: ${nB} big cubes &nbsp;·&nbsp; Mai: ${nS} small cubes</span>`);
+      card.querySelector('.scaleHere').before(kn);
+      card._clueText=` Tom used ${nB} big cubes. Mai used ${nS} small cubes. Both scales balance.`;
+      if(q.ask==='both'){
+        setPrompt(`Tom says the ${objName(o)} weighs <b>${nB}</b>. Mai says <b>${nS}</b>. Can they <b>both</b> be right?`);
+        ask([{a:true,html:'✅ Yes'},{a:false,html:'❌ No'}],(a,b)=>{ if(a===true){ b.classList.add('right'); solved(); card.querySelector('.praise').innerHTML+='<br><small>Different cubes, different numbers!</small>'; } else { wrong(b); hint(`Look! <b>Both</b> scales balance. Tom used <b>big</b> cubes, Mai used <b>small</b> cubes.`); } });
+      } else {
+        setPrompt(`Which cubes give a <b>bigger number</b>?`);
+        ask([{a:'big',html:`<span class="pics">${itemHTML(BC())}</span><span>big cubes</span>`},{a:'small',html:`<span class="pics">${itemHTML(CU())}</span><span>small cubes</span>`}],(a,b)=>{
+          if(a==='small'){ b.classList.add('right'); solved(); card.querySelector('.praise').innerHTML+=`<br><small>Small cubes: you need more of them!</small>`; }
+          else { wrong(b); hint(`Count them: <b>${nB}</b> big cubes, <b>${nS}</b> small cubes. Which number is bigger?`); } });
+      }
+    }
+  }
+
+  /* ===== LEVEL 4: order three things ===== */
+  if(q.type==='order3'){
+    sc.style.display='none';
+    const it=q.items, nm=i=>oneName(it[i]);
+    const kn=document.createElement('div'); kn.className='known '+(q.know.length>2?'three':'two');
+    kn.innerHTML='<span class="lab">We know:</span>';
+    q.know.forEach(([a,b])=>{ const m=document.createElement('div'); m.className='mini'; const big=x=>({...x,s:Math.min(x.s*1.7,3.0)}); const ks=makeScale({L:[big(it[a])],R:[big(it[b])]}); ks.real(); m.appendChild(ks); kn.appendChild(m); });
+    card.querySelector('.scaleHere').before(kn);
+    card._clueText=' We know: '+q.know.map(([a,b])=>{ const [h,l]=it[a].w>it[b].w?[a,b]:[b,a]; return `The ${nm(h)} is heavier than the ${nm(l)}`; }).join('. ')+'.';
+    const byW=[0,1,2].sort((x,y)=>it[x].w-it[y].w);            // light → heavy
+    const pic=i=>itemHTML({...it[i],s:1});
+    const pickBtns=()=>[0,1,2].map(i=>({a:i,html:`<span class="pics pick">${pic(i)}</span><span>${nm(i)}</span>`}));
+    // can the order be worked out from the given scales?  (transitive closure)
+    const gt=[[0,0,0],[0,0,0],[0,0,0]];
+    q.know.forEach(([a,b])=>{ if(it[a].w>it[b].w) gt[a][b]=1; else gt[b][a]=1; });
+    for(let k=0;k<3;k++)for(let i=0;i<3;i++)for(let j=0;j<3;j++) if(gt[i][k]&&gt[k][j]) gt[i][j]=1;
+    const known=[[0,1],[0,2],[1,2]].every(([i,j])=>gt[i][j]||gt[j][i]);
+    if(q.ask==='heaviest'||q.ask==='lightest'){
+      const ans = q.ask==='heaviest'?byW[2]:byW[0];
+      setPrompt(`Look at the scales. Which is the <b>${q.ask==='heaviest'?'HEAVIEST':'LIGHTEST'}</b>?`);
+      ask(pickBtns(),(a,b)=>{
+        if(a===ans){ b.classList.add('right'); solved(); }
+        else { wrong(b); hint(q.ask==='heaviest' ? `The <b>heaviest</b> one goes <b>DOWN</b> ⬇️ on every scale it is on.` : `The <b>lightest</b> one goes <b>UP</b> ⬆️ on every scale it is on.`); }
+      });
+    } else if(q.ask==='need'){
+      setPrompt(`Can we put them in order from <b>light</b> to <b>heavy</b> now? Or do we need <b>one more scale</b>?`);
+      ask([{a:true,html:'✅ We can tell'},{a:false,html:'⚖️ Need one more scale'}],(a,b)=>{
+        if(a===known){ b.classList.add('right'); solved();
+          card.querySelector('.praise').innerHTML += known ? `<br><small>🪶 ${nm(byW[0])} → ${nm(byW[1])} → ${nm(byW[2])} 🏋️</small>` : `<br><small>We don't know: ${nm(byW[0])} or ${nm(byW[1])}?</small>`; }
+        else { wrong(b); hint(known ? `Follow the scales: one is heavier than the next, and that one is heavier than the last. <b>We can tell!</b>` : `Both scales only tell us about the <b>${nm(byW[2])}</b>. We don't know which of the other two is heavier.`); }
+      });
+    } else {
+      setPrompt(`Put them in order: <b>lightest</b> 🪶 first, <b>heaviest</b> 🏋️ last.`);
+      const sl=document.createElement('div'); sl.className='slots';
+      sl.innerHTML=`<div class="slot"><small>🪶 lightest</small></div><span class="arr">➜</span><div class="slot"></div><span class="arr">➜</span><div class="slot"><small>heaviest 🏋️</small></div>`;
+      choices.before(sl);
+      const slots=[...sl.querySelectorAll('.slot')]; let placed=[];
+      const draw=()=>{
+        slots.forEach((el,k)=>{ const sm=el.querySelector('small'); el.innerHTML = placed[k]!==undefined ? pic(placed[k]) : ''; if(sm) el.appendChild(sm); el.classList.toggle('fill',placed[k]!==undefined);
+          el.onclick=()=>{ if(card._done) return; if(placed[k]!==undefined){ placed=placed.slice(0,k); draw(); } }; });
+        ask(pickBtns().filter(o=>!placed.includes(o.a)),(a)=>{
+          placed.push(a); draw();
+          if(placed.length===3){
+            if(placed.every((x,k)=>x===byW[k])){ card._done=true; solved(); }
+            else { const t = q.know.length<3 ? `Find the one that goes <b>up</b> ⬆️ and is never down. That is the <b>lightest</b>. Start with it! Try again!` : `The <b>lightest</b> goes <b>up</b> on every scale. Start with it. Try again!`;
+              hint(t); setTimeout(()=>{ placed=[]; draw(); },1200); }
+          }
+        });
+      };
+      draw();
+    }
+  }
+
+  /* ===== LEVEL 3: puzzle (deduce from "We know" scales) ===== */
+  if(q.type==='puzzle'){
+    const kn=document.createElement('div'); kn.className='known'+(q.know.length>1?' two':'');
+    kn.innerHTML='<span class="lab">We know:</span>';
+    q.know.forEach(([l,r])=>{ const m=document.createElement('div'); m.className='mini'; const ks=makeScale({L:l,R:r}); ks.real(); m.appendChild(ks); kn.appendChild(m); });
+    card.querySelector('.scaleHere').before(kn);
+    card._clueText = ' We know: ' + q.know.map(([l,r])=>{ const d=sum(l)-sum(r);
+      const cap=x=>x[0].toUpperCase()+x.slice(1), hv=d>0?l:r, lt=d>0?r:l;
+      return d===0 ? `${cap(groupName(l,true))} ${isPlural(l)?'weigh':'weighs'} the same as ${groupName(r,true)}` : `${cap(groupName(hv,true))} ${isPlural(hv)?'are':'is'} heavier than ${groupName(lt,true)}`; }).join('. ') + '.';
+    const hv=heavierSide(q);
+    if(q.ask!=='size') sc.classList.add('mystery'); else sc.real();
+    const reveal=()=>{ sc.classList.remove('mystery'); sc.real(); };
+    if(q.ask==='flat'){
+      setPrompt(`Look at what we know. Will this scale <b>balance</b>? ↔️`);
+      ask([{a:true,html:'✅ Yes<br><small>balanced</small>'},{a:false,html:'❌ No<br><small>not balanced</small>'}],(a,b)=>{
+        if(a===(hv==='=')){ b.classList.add('right'); setTimeout(reveal,200); solved(); }
+        else { wrong(b); hint(q.tip); } });
+    } else if(q.ask==='which'){
+      const [A3,B3]=pair(q);
+      setPrompt(`Look at what we know. Which will go <b>down</b>: <b>${A3}</b> or <b>${B3}</b>?`);
+      ask([sideBtn('L'),sideBtn('R')],(a,b)=>{
+        if(a===hv){ good(b,a); setTimeout(reveal,200); solved(); }
+        else { wrong(b); hint(q.tip); } });
+    } else {
+      setPrompt(`The scale is balanced. Does it tell us the apple and the plums are the same <b>SIZE</b>?`);
+      ask([{a:true,html:'✅ Yes'},{a:false,html:'❌ No'}],(a,b)=>{
+        if(a===false){ b.classList.add('right'); solved(); card.querySelector('.praise').innerHTML+='<br><small>A scale tells us heavy, not big!</small>'; }
+        else { wrong(b); hint(q.tip); } });
+    }
+  }
+
+  /* ===== LEVEL 2: change (predict → try → read) ===== */
+  if(q.type==='change'){
+    sc.real();
+    const a = q.act, whereTxt = a.side==='both' ? '<b>BOTH</b> sides ↔️' : a.side==='L' ? 'the <b>left</b> side ⬅️' : 'the <b>right</b> side ➡️';
+    const thing = a.op==='add' ? a.make().k : a.k;
+    setPrompt(`We ${a.op==='add'?'<b>ADD</b> a '+thing+' to':'<b>TAKE</b> a '+thing+' <b>AWAY</b> from'} ${whereTxt}. ${q.yes ? q.yes : 'What will '+(a.side==='L'?'the <b>left</b> side ⬅️':'the <b>right</b> side ➡️')+' do?'}`);
+    const opts = q.yes ? [{a:true,html:'✅ Yes'},{a:false,html:'❌ No'}] : [{a:'down',html:'⬇️ go down'},{a:'up',html:'⬆️ go up'}];
+    ask(opts,(guess,b)=>{
+      b.classList.add('picked'); choices.querySelectorAll('button').forEach(x=>x.disabled=true);
+      setTimeout(()=>{
+        setPrompt(`Good guess! Let's <b>try it</b>.`);
+        choices.innerHTML=`<button class="weigh">✋ Try it!</button>`;
+        choices.firstChild.onclick=()=>{
+          choices.innerHTML='';
+          const sides = a.side==='both'?['L','R']:[a.side];
+          sides.forEach(sd=>{ const arr = sd==='L'?q.L:q.R;
+            if(a.op==='add') arr.push(a.make()); else { const i=arr.map(x=>x.k).lastIndexOf(a.k); if(i>=0) arr.splice(i,1); } });
+          sc.draw(); sc.real();
+          // was the guess right?  (not graded – only a "surprise" note)
+          const hv = heavierSide(q);
+          let right;
+          if(q.yes){ right = (hv===q.yesIf)===guess; }
+          else { const side=q.watch; right = (hv===side?'down':'up')===guess; }
+          setTimeout(()=>{
+            const [A2,B2]=pair(q);
+            if(hv==='='){
+              setPrompt(`${right?'':'Surprise! 😮 '}Do <b>${A2}</b> and <b>${B2}</b> weigh <b>the same</b> now?`);
+              ask([{a:true,html:'✅ Yes<br><small>the same</small>'},{a:false,html:'❌ No<br><small>not the same</small>'}],(x,bb)=>{
+                if(x){ bb.classList.add('right'); solved(); } else { wrong(bb); hint(`Look! The scale is <b>balanced</b> ↔️. Balanced means <b>the same</b> weight.`); } });
+            } else {
+              setPrompt(`${right?'':'Surprise! 😮 '}Which is <b>heavier</b> now: <b>${A2}</b> or <b>${B2}</b>?`);
+              const two2=[sideBtn('L'),sideBtn('R')];
+              ask(two2,(x,bb)=>{ if(x===hv){ good(bb,x); solved(); } else { wrong(bb); hint(`The <b>heavier</b> side goes <b>DOWN</b> ⬇️.`); } });
+            }
+            say(card._prompt);
+          },1200);
+        };
+      },500);
+    });
+  }
+
+  /* ===== LEVEL 2: balance (add / take away until flat) ===== */
+  if(q.type==='balance'){
+    sc.real();
+    setPrompt(`Make the scale <b>balance</b>! ↔️ Add or take away.`);
+    const draw = ()=>{
+      choices.innerHTML='';
+      q.tools.forEach(([sd,mk])=>{
+        const it=mk(), arr=sd==='L'?q.L:q.R, arrow=sd==='L'?'⬅️':'➡️';
+        [['add','+'],['rem','−']].forEach(([op,sym])=>{
+          const b=document.createElement('button'); b.className='choice tool';
+          b.innerHTML=`${arrow} ${sym} ${itemHTML({...it,s:1})}`;
+          b.disabled = op==='rem' ? !arr.some(x=>x.k===it.k) : arr.length>=6;
+          b.onclick=()=>{
+            if(card._done) return;
+            if(op==='add') arr.push(mk()); else { const i=arr.map(x=>x.k).lastIndexOf(it.k); arr.splice(i,1); }
+            sc.draw(); sc.real(); draw();
+            const d=sum(q.L)-sum(q.R);
+            if(d===0){ choices.querySelectorAll('button').forEach(x=>x.disabled=true); card._done=true; setTimeout(()=>{ pans.forEach(p=>p.classList.add('good')); solved(); },900); }
+            else if(card._lastD!==undefined && Math.sign(d)!==Math.sign(card._lastD)) hint(`Oops, too much! Now the <b>other</b> side is down. Take one away.`,true);
+            else clearHint();
+            card._lastD=d;
+          };
+          choices.appendChild(b);
+        });
+      });
+    };
+    card._lastD = sum(q.L)-sum(q.R);
+    draw();
+  }
+
+  return card;
+}
+
+function giveCarrot(card){
+  const r=card.getBoundingClientRect(), b=$('#buddy').getBoundingClientRect();
+  const c=document.createElement('div'); c.className='carrotFly'; c.textContent='🥕';
+  c.style.left=(r.left+r.width/2)+'px'; c.style.top=(r.top+60)+'px'; document.body.appendChild(c);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ c.style.left=(b.left+b.width*.35)+'px'; c.style.top=(b.top+b.height*.35)+'px'; c.style.transform='scale(.6) rotate(360deg)'; }));
+  setTimeout(()=>{ c.remove(); save.carrots++; store.set(save); updateCarrots();
+    const bd=$('#buddy'); bd.classList.remove('happy'); void bd.offsetWidth; bd.classList.add('happy'); },950);
+}
+updateCarrots();
+/* ============ CLASS CODE GATE ============ */
+const CODE_HASH='9dfbae98257df8db309d3313566195a2cc240e8a1c364762dbdfd6ab9f3cac3a';   // SHA-256 of the class code
+async function sha(t){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+(function(){
+  let ok=false; try{ ok = localStorage.getItem('bunnyGate')===CODE_HASH; }catch(e){}
+  if(ok){ show('start'); return; }
+  let typed='';
+  const pad=$('#gpad');
+  [1,2,3,4,5,6,7,8,9,'⌫',0,'✓'].forEach(k=>{ const b=document.createElement('button'); b.textContent=k; pad.appendChild(b);
+    b.onclick=async()=>{
+      if(k==='⌫') typed=typed.slice(0,-1);
+      else if(k!=='✓' && typed.length<4) typed+=k;
+      document.querySelectorAll('#gdots i').forEach((d,i)=>d.classList.toggle('on',i<typed.length));
+      if(typed.length===4){
+        if(await sha(typed)===CODE_HASH){ try{localStorage.setItem('bunnyGate',CODE_HASH)}catch(e){} show('start'); say("Hi! I'm Bunny. Let's play!"); }
+        else { $('#gmsg').textContent='Try again! 🙂'; typed=''; setTimeout(()=>{ document.querySelectorAll('#gdots i').forEach(d=>d.classList.remove('on')); $('#gmsg').textContent=''; },900); }
+      }
+    };
+  });
+})();
+</script>
+</body>
+</html>
