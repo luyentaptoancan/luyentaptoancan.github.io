@@ -479,7 +479,30 @@ const LEVELS = [
    {type:'nscale', L:[NU(8)], R:[NU(5)], ask:'more'},
   ]},
  ]},
- {id:7, icon:'🏆', name:'Balance Master'},
+ {id:7, icon:'🏆', name:'Balance Master', intro:{easy:'Guess first! Then watch the scale.', medium:'Fix the scales! There can be more than one way.', hard:'Master time! A mix of everything.'}, sets:[
+  {tier:'easy', qs:[
+   {type:'nscale', L:[NU(7)], R:[NU(3),NU(3)], ask:'predict'},
+   {type:'nscale', L:[NU(2),NU(4)], R:[NU(6)], ask:'predict'},
+   {type:'nscale', L:[NU(5)], R:[NU(1),NU(1),NU(1)], ask:'predict'},
+   {type:'nscale', L:[NU(4)], R:[NU(9)], ask:'predict'},
+   {type:'nscale', L:[NU(3),NU(5)], R:[NU(4),NU(4)], ask:'predict'},
+  ]},
+  {tier:'medium', qs:[
+   {type:'nscale', L:[NU(8)], R:[NU(5)], ask:'more'},
+   {type:'nscale', L:[NU(3)], R:[NU(7)], ask:'more'},
+   {type:'nscale', L:[NU(9)], R:[NU(6)], ask:'take'},
+   {type:'nscale', L:[NU(4),NU(4)], R:[NU(9)], ask:'fix', who:'Mai', fixes:[['R',0,8],['L',1,5],['R',0,7]]},
+   {type:'nscale', L:[NU(6)], R:[NU(2),NU(2)], ask:'fix', who:'Tom', fixes:[['L',0,4],['R',1,4],['R',0,3]]},
+  ]},
+  {tier:'hard', qs:[
+   {type:'change', L:[AP()], R:[PL(),PL()], act:{side:'R',op:'add',make:PL}, watch:'R'},
+   {type:'puzzle', know:[[[SQ(2)],[CI(1),CI(1)]]], L:[SQ(2),CI(1)], R:[CI(1),CI(1),CI(1)], ask:'flat', tip:`Swap the square for <b>two circles</b>. Then both sides have three circles!`},
+   {type:'cubecmp', a:[I('apple',2.0,6),6], b:[I('cookie',1.7,4),4], ask:'more'},
+   {type:'nscale', L:[NU(9)], R:[NU(null),NU(4)], ask:'missing', ans:5},
+   {type:'nscale', L:[NU(10)], R:[NU(4),NU(5)], ask:'predict'},
+   {type:'nscale', L:[], R:[], ask:'make'},
+  ]},
+ ]},
 ];
 const MAPPOS = [[13,86],[24,68],[40,78],[56,62],[72,72],[86,48],[72,26],[50,20]];
 
@@ -883,12 +906,69 @@ function makeCard(q0){
           hint(`Look! With <b>${a}</b> it does not balance. ${a>q.ans?'Too big! Try a smaller number.':'Too small! Try a bigger number.'}`); } });
       blank.w=0;
     }
-    if(q.ask==='more'){
+    if(q.ask==='more'||q.ask==='take'){
       sc.real();
-      setPrompt(`<b>8</b> and <b>5</b>. How many <b>more</b> on the <b>5</b> side to make it balance?`);
-      ask(numBtns(3),(a,b)=>{
-        if(a===3){ q.R.push(NU(3)); b.classList.add('right'); sc.draw(); sc.real(); solved(); card.querySelector('.praise').innerHTML+=`<br><small>8 = 5 + 3. Or take 3 away from the 8!</small>`; }
-        else { wrong(b); hint(`Count on from <b>5</b> up to <b>8</b>: 6, 7, 8. How many numbers did you say?`); } });
+      const a0=sum(q.L), b0=sum(q.R), big=Math.max(a0,b0), small=Math.min(a0,b0), d=big-small, smallSide=a0<b0?'L':'R';
+      setPrompt(q.ask==='more' ? `<b>${a0}</b> and <b>${b0}</b>. How many <b>more</b> on the <b>${small}</b> side to make it balance?`
+                               : `<b>${a0}</b> and <b>${b0}</b>. How many can you <b>take away</b> from the <b>${big}</b> to make it balance?`);
+      ask(numBtns(d),(a,b)=>{
+        if(a===d){ b.classList.add('right');
+          if(q.ask==='more') q[smallSide].push(NU(d)); else { const bs=smallSide==='L'?'R':'L'; q[bs]=[NU(big-d)]; }
+          sc.draw(); sc.real(); solved();
+          card.querySelector('.praise').innerHTML+= q.ask==='more' ? `<br><small>${big} = ${small} + ${d}. Or take ${d} away from the ${big}!</small>` : `<br><small>${big} take away ${d} is ${small}. Or add ${d} to the ${small}!</small>`; }
+        else { wrong(b); hint(q.ask==='more' ? `Count on from <b>${small}</b> up to <b>${big}</b>. How many numbers did you say?` : `Count back from <b>${big}</b> down to <b>${small}</b>. How many steps?`); } });
+    }
+    if(q.ask==='predict'){
+      sc.classList.add('mystery');
+      const real=heavierSide(q);
+      setPrompt(`<b>${groupName(q.L)}</b> and <b>${groupName(q.R)}</b>. What will the scale do? <b>Guess first!</b>`);
+      const opts=[{a:'L',html:'⬅️ left<br><small>goes down</small>'},{a:'=',html:'⚖️<br><small>balanced</small>'},{a:'R',html:'right ➡️<br><small>goes down</small>'}];
+      ask(opts,(a,b)=>{
+        b.classList.add('picked'); choices.querySelectorAll('button').forEach(x=>x.disabled=true);
+        setTimeout(()=>{ reveal();
+          if(a===real){ b.classList.add('right'); solved(); card.querySelector('.praise').innerHTML+=`<br><small>${sum(q.L)} ${real==='='?'=':'and'} ${sum(q.R)}</small>`; return; }
+          missed=true;
+          setTimeout(()=>{
+            setPrompt(`Surprise! 😮 <b>${groupName(q.L)}</b> makes <b>${sum(q.L)}</b>. <b>${groupName(q.R)}</b> makes <b>${sum(q.R)}</b>. What did the scale do?`);
+            ask(opts,(a2,b2)=>{ if(a2===real){ b2.classList.add('right'); solved(); } else { wrong(b2); hint(`Look at the scale. Is one side <b>down</b> ⬇️, or is it flat?`); } });
+          },900);
+        },400);
+      });
+    }
+    if(q.ask==='fix'){
+      sc.real();
+      setPrompt(`${q.who} made this scale. It does <b>not</b> balance! Fix it with <b>one change</b>.`);
+      const lab=([side,i,to])=>`change <b>${q[side][i].n}</b> to <b>${to}</b>`;
+      const okWays=[];
+      ask(q.fixes.map((f,k)=>({a:k,html:lab(f)})),(k,b)=>{
+        const [side,i,to]=q.fixes[k], old=q[side][i].n;
+        q[side][i]=NU(to); sc.draw(); sc.real();
+        if(sum(q.L)===sum(q.R)){ okWays.push(k); b.classList.add('right'); b.disabled=true;
+          const other=q.fixes.findIndex((f,j)=>j!==k && !okWays.includes(j) && (()=>{ const t={L:q.L.map(x=>x.n),R:q.R.map(x=>x.n)}; t[side][i]=old; t[f[0]][f[1]]=f[2]; return t.L.reduce((a,c)=>a+c,0)===t.R.reduce((a,c)=>a+c,0); })());
+          if(okWays.length===1 && other>=0){
+            ding(true); say('Yes! It balances. Is there another way?');
+            setPrompt(`Yes, it balances! 🎉 Is there <b>another way</b> to fix ${q.who}'s scale? Try!`);
+            setTimeout(()=>{ q[side][i]=NU(old); sc.draw(); sc.real(); },1500);
+          } else { solved(); card.querySelector('.praise').innerHTML+= okWays.length>1?'<br><small>Two ways! Both work!</small>':''; }
+        } else { wrong(b); setTimeout(()=>{ q[side][i]=NU(old); sc.draw(); sc.real(); },1500);
+          hint(`Now it is <b>${sum(q.L)}</b> and <b>${sum(q.R)}</b>. Not the same yet! Try another change.`); }
+      });
+    }
+    if(q.ask==='make'){
+      let stage='L';
+      setPrompt(`Make <b>your own</b> balanced scale! First, pick a number for the <b>left</b> side ⬅️.`);
+      const tiles=()=>[1,2,3,4,5,6,7,8,9].map(n=>({a:n,html:itemHTML(NU(n))}));
+      const go=()=>ask(tiles(),(n)=>{
+        if(card._done) return;
+        if(stage==='L'){ q.L=[NU(n)]; stage='R'; sc.draw(); sc.real(); setPrompt(`Now put numbers on the <b>right</b> side ➡️ until it <b>balances</b>.`); say('Now put numbers on the right side until it balances.'); return; }
+        q.R.push(NU(n)); sc.draw(); sc.real();
+        const l=sum(q.L), r=sum(q.R);
+        if(r===l){ card._done=true; const mine=`${l} = ${q.R.map(x=>x.n).join(' + ')}`;
+          setPrompt(`You made a balanced scale! ⚖️`); save.made=(save.made||[]); if(!save.made.includes(mine)) save.made.push(mine); store.set(save);
+          solved(); card.querySelector('.praise').innerHTML+=`<br><small>${mine} — saved for a friend! 💾</small>`; }
+        else if(r>l){ hint(`<b>${r}</b> is more than <b>${l}</b>. Too heavy! Let's start the right side again.`,true); setTimeout(()=>{ q.R=[]; sc.draw(); sc.real(); },1500); }
+      });
+      sc.real(); go();
     }
     if(q.ask==='ways'){
       const found=new Set(); let pick=[];
